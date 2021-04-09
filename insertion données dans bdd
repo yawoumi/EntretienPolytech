@@ -1,0 +1,75 @@
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (NOW(), 'AM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (NOW(), 'PM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+1, 'AM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+1, 'PM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+2, 'AM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+2, 'PM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+3, 'AM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+3, 'PM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+4, 'AM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+4, 'PM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+5, 'AM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+5, 'PM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+6, 'AM');
+INSERT INTO Horaires (dateH_Horaires,heureH_Horaires) VALUES (date(NOW())+6, 'PM');
+
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Vernier', 'Flavien');
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Yvenat', 'Muriel');
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Marteau', 'Stéphane');
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Valet', 'Lionel');
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Cimpan', 'Sorana');
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Breysse', 'Michel');
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Prele', 'Florian');
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Alloui', 'Ilham');
+INSERT INTO Enseignant (nomEns_Enseignant, prenomEns_Enseignant) VALUES ('Cuny', 'Michel');
+
+INSERT INTO Salle (nomS_Salle) VALUES ('C110');
+INSERT INTO Salle (nomS_Salle) VALUES ('C111');
+INSERT INTO Salle (nomS_Salle) VALUES ('C112');
+INSERT INTO Salle (nomS_Salle) VALUES ('C113');
+INSERT INTO Salle (nomS_Salle) VALUES ('C114');
+INSERT INTO Salle (nomS_Salle) VALUES ('C115');
+INSERT INTO Salle (nomS_Salle) VALUES ('C116');
+INSERT INTO Salle (nomS_Salle) VALUES ('C117');
+INSERT INTO Salle (nomS_Salle) VALUES ('C118');
+INSERT INTO Salle (nomS_Salle) VALUES ('C119');
+INSERT INTO Salle (nomS_Salle) VALUES ('C210');
+INSERT INTO Salle (nomS_Salle) VALUES ('C211');
+INSERT INTO Salle (nomS_Salle) VALUES ('C212');
+INSERT INTO Salle (nomS_Salle) VALUES ('C213');
+INSERT INTO Salle (nomS_Salle) VALUES ('C214');
+INSERT INTO Salle (nomS_Salle) VALUES ('C215');
+INSERT INTO Salle (nomS_Salle) VALUES ('C216');
+INSERT INTO Salle (nomS_Salle) VALUES ('C217');
+INSERT INTO Salle (nomS_Salle) VALUES ('C218');
+INSERT INTO Salle (nomS_Salle) VALUES ('C219');
+
+INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('recrutements PEIP');
+INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('recrutements filière ingé');
+INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('APP');
+INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('stage FI3');	
+INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('stage FI4');
+INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('stage FI5');
+INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('projets usage');
+INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('projet R&D');
+
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('contenu de l'exposé', 'insuffisant');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('contenu de l'exposé', 'moyen');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('contenu de l'exposé', 'bien');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('contenu de l'exposé', 'très bien');
+
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité des support', 'insuffisant');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité des support', 'moyen');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité des support', 'bien');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité des support', 'très bien');
+
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité de l expression', 'insuffisant');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité de l expression', 'moyen');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité de l expression', 'bien');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité de l expression', 'très bien');
+
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('reponse aux questions', 'insuffisant');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('reponse aux questions', 'moyen');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('reponse aux questions', 'bien');
+INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('reponse aux questions', 'très bien');
+
