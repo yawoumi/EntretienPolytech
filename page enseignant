@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
 <html>
-
   <head>
     <title></title>
     <meta content="info">
@@ -19,8 +18,15 @@ mysqli_query($conn, "SET NAMES UTF8");
 	<p>Veuillez entre votre nom et prénom:</p>
 	Nom: <input type="text" name="nom" value="None"><br>
 	Prénom: <input type="text" name="prenom" value="None"><br>
+	<input type="submit" value="M'identifier">
 	
-	<p>Veuillez sélectionner une disponibilité</p>
+	<?php
+	if (!empty($_POST['nom']) and !empty($_POST["prenom"])){
+	$nom = $_POST['nom'];
+	$prenom = $_POST["prenom"];
+	}
+	?>
+	<h4>Sélectionner une disponibilité</h4>
 
 	<select id="dispoE" name="dispoE">
 	<?php
@@ -35,10 +41,8 @@ mysqli_query($conn, "SET NAMES UTF8");
 	</br>
   <?php
 	if (empty($_POST['nom']) or empty($_POST["prenom"]) or empty($_POST["dispoE"])){
-		echo "Erreur: Veuillez indiquer votre nom, votre prénom et sélectionner un horaire.";
+		echo "Erreur: Veuillez vous identifier et sélectionner un horaire.";
 	}else{
-	$nom = $_POST['nom'];
-	$prenom = $_POST["prenom"];
 	$dispoE = explode(";",$_POST["dispoE"][0]);
 	$sql3="SELECT idEns_Enseignant FROM Enseignant WHERE nomEns_Enseignant=".$nom." AND prenomEns_Enseignant=".$prenom.";";
 	$result3 = mysqli_query($conn, $sql3);
@@ -49,9 +53,16 @@ mysqli_query($conn, "SET NAMES UTF8");
 	$result2 = mysqli_query($conn, $sql2);
 	}
   ?>
-  <h4>Horaires disponible sélectionnés:</h4>
+  <h4>Horaires de mes disponibilités sélectionnés:</h4>
   <?php
-  $sql1="SELECT * FROM DispoEnseignant WHERE ";
+  if (empty($_POST['nom']) or empty($_POST["prenom"]) or empty($_POST["dispoE"])){
+		echo "Erreur: Veuillez vous identifier";
+	}
+  else{
+  $sql1="SELECT dateDEns_DispoEnseignant, heureD_DispoEnseignant 
+		FROM Enseignant as ens JOIN a_des_disponibilites as add ON ens.idEns_Enseignant=add.idEns_Enseignant
+		JOIN DispoEnseignant as de ON add.idDEns_DispoEnseignant=as.idDEns_DispoEnseignant 
+		WHERE nomEns_Enseignant=".$nom." AND prenomEns_Enseignant=".$prenom.";";
   $result = mysqli_query($conn, $sql1);
   echo "<table id='table'> 
         <tr>
@@ -65,17 +76,26 @@ mysqli_query($conn, "SET NAMES UTF8");
         echo "</tr>\n";
     }
     echo "</table>";
+      }
   ?>
   <!--Afficher les affectations d'entretien-->
   <h3>Liste des entretiens</h3>
 <?php
+	if (empty($_POST['nom']) or empty($_POST["prenom"]) or empty($_POST["dispoE"])){
+		echo "Erreur: Veuillez vous identifier";
+	}
+  else{
 	/*Problème pour avoir date et horaire entretien sql*/
-	$sql = "SELECT  , heureH_Horaires, nomS_Salle, descriptionT_Type_Session, nomEtu_Etudiant, prenomEtu_Etudiant 
-	FROM Entretien as ent JOIN Etudiant as etu ON ent.idEtu_Etudiant=etu.idEtu_Etudiant 
-	JOIN Passe as p ON etu.idEtu_Etudiant=p.idEtu_Etudiant 
-	JOIN Type_session as ts ON p.idT_Type_Session=ts.idT_Type_Session 
-	JOIN Salle as s ON ent.idS_Salle=s.idS_Salle
-	JOIN ON ; ";
+	$sql = "SELECT  dateH_Horaires, heureH_Horaires, nomS_Salle, descriptionT_Type_Session, nomEtu_Etudiant, prenomEtu_Etudiant 
+	FROM (".$sql3.") AS prof JOIN Evalue as eval ON prof.idEns_Enseignant=eval.idEns_Enseignant
+	JOIN Entretien as ent ON eval.idEnt_Entretien=ent.idEnt_Entretien
+	JOIN Assiste AS ass ON ent.idEnt_Entretien=ass.idEnt_Entretien
+	JOIN Etudiant AS etu ON ass.idEtu_Etudiant=etu.idEtu_Etudiant 
+	JOIN Passe AS p ON etu.idEtu_Etudiant=p.idEtu_Etudiant 
+	JOIN Type_session AS ts ON p.idT_Type_Session=ts.idT_Type_Session 
+	JOIN se_deroule as der ON ent.idEnt_Entretien=der.idEnt_Entretien
+	JOIN Salle AS s ON der.idS_Salle=s.idS_Salle
+	JOIN Horaires AS h ON der.idH_Horaires=h.idH_Horaires; ";
     $result = mysqli_query($conn, $sql);
 	echo "<ul>";
 	while ($row=mysqli_fetch_array($result)) {
@@ -84,6 +104,7 @@ mysqli_query($conn, "SET NAMES UTF8");
 		echo "</li>\n";
 	}
 	echo "</ul>";
+  }
 ?>
   </br>
   <!--Accès à la page php por remplir les résultats-->
