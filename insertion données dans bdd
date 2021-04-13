@@ -53,23 +53,23 @@ INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('stage FI5');
 INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('projets usage');
 INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('projet R&D');
 
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('contenu de l'exposé', 'insuffisant');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('contenu de l'exposé', 'moyen');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('contenu de l'exposé', 'bien');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('contenu de l'exposé', 'très bien');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('contenu de l'exposé');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('contenu de l'exposé');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('contenu de l'exposé');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('contenu de l'exposé');
 
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité des support', 'insuffisant');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité des support', 'moyen');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité des support', 'bien');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité des support', 'très bien');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité des support');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité des support');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité des support');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité des support');
 
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité de l expression', 'insuffisant');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité de l expression', 'moyen');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité de l expression', 'bien');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('qualité de l expression', 'très bien');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité de l expression');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité de l expression');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité de l expression');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité de l expression');
 
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('reponse aux questions', 'insuffisant');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('reponse aux questions', 'moyen');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('reponse aux questions', 'bien');
-INSERT INTO Critere (descriptionC_Critere, niveauEval_Critere) VALUES ('reponse aux questions', 'très bien');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('reponse aux questions');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('reponse aux questions');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('reponse aux questions');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('reponse aux questions');
 
