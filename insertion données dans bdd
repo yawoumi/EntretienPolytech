@@ -53,7 +53,7 @@ INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('stage FI5');
 INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('projets usage');
 INSERT INTO Type_Session (descriptionT_Type_Session) VALUES ('projet R&D');
 
-INSERT INTO Critere (descriptionC_Critere) VALUES ('contenu de l'exposé');
+INSERT INTO Critere (descriptionC_Critere) VALUES ('contenu de l expose');
 INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité des support');
 INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité de l expression');
 INSERT INTO Critere (descriptionC_Critere) VALUES ('reponse aux questions');
