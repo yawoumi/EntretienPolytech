@@ -1,1 +1,93 @@
+<!DOCTYPE HTML>
+<html>
 
+  <head>
+    <title></title>
+    <meta content="info">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="Enseignant.css">
+  </head>
+ 
+<body> 
+<?php
+$conn = @mysqli_connect("tp-epua:3308", "thezed", "w9edpht9") or die ("Impossible de se connecter: ".mysqli_connect_error());
+mysqli_select_db($conn, "thezed") or die("Impossible de sélectionner la base: ".mysqli_connect_error());
+mysqli_query($conn, "SET NAMES UTF8");
+?>
+  <!--Entrer les disponibilités une à une-->
+  <h3>Mes horaires disponibles</h3>
+	<p>Veuillez entre votre nom et prénom:</p>
+	Nom: <input type="text" name="nom" value="None"><br>
+	Prénom: <input type="text" name="prenom" value="None"><br>
+	
+	<p>Veuillez sélectionner une disponibilité</p>
+
+	<select id="dispoE" name="dispoE">
+	<?php
+	$sql4="SELECT dateH_Horaires, heureH_Horaires FROM Horaires;";
+	$result4=mysqli_query($conn, $sql4);
+	while ($row = mysqli_fetch_assoc($result4)) {
+			echo "<option value=".$row[0].";".$row[1]."> Le ".$row[0]." à ".$row[1]."</option>";
+	}
+	?>
+	</select>
+    <input type="submit" value="Entrer ma disponibilité"> 
+	</br>
+  <?php
+	if (empty($_POST['nom']) or empty($_POST["prenom"]) or empty($_POST["dispoE"])){
+		echo "Erreur: Veuillez indiquer votre nom, votre prénom et sélectionner un horaire.";
+	}else{
+	$nom = $_POST['nom'];
+	$prenom = $_POST["prenom"];
+	$dispoE = explode(";",$_POST["dispoE"][0]);
+	$sql3="SELECT idEns_Enseignant FROM Enseignant WHERE nomEns_Enseignant=".$nom." AND prenomEns_Enseignant=".$prenom.";";
+	$result3 = mysqli_query($conn, $sql3);
+	$row3 = mysqli_fetch_assoc($result3);
+	$idEns=$row3[0];
+	$sql2= "INSERT INTO DispoEnseignant ('idDEns_DispoEnseignant', 'dateDEns_DispoEnseignant', 'heureD_DispoEnseignant')
+			values (".$idEns.", ".$dispoE[0].", ".$dispoE[1].");";
+	$result2 = mysqli_query($conn, $sql2);
+	}
+  ?>
+  <h4>Horaires disponible sélectionnés:</h4>
+  <?php
+  $sql1="SELECT * FROM DispoEnseignant WHERE ";
+  $result = mysqli_query($conn, $sql1);
+  echo "<table id='table'> 
+        <tr>
+        <th>id_Horaire</th>
+        <th>Date</th>
+		<th>Heure</th>
+        </tr>";
+        while ($row = mysqli_fetch_assoc($result)) { 
+        echo "<tr>\n";
+        echo "<td>".$row[0]."</td>"." <td>". $row[1]."</td>". $row[2]."</td>";
+        echo "</tr>\n";
+    }
+    echo "</table>";
+  ?>
+  <!--Afficher les affectations d'entretien-->
+  <h3>Liste des entretiens</h3>
+<?php
+	/*Problème pour avoir date et horaire entretien sql*/
+	$sql = "SELECT  , heureH_Horaires, nomS_Salle, descriptionT_Type_Session, nomEtu_Etudiant, prenomEtu_Etudiant 
+	FROM Entretien as ent JOIN Etudiant as etu ON ent.idEtu_Etudiant=etu.idEtu_Etudiant 
+	JOIN Passe as p ON etu.idEtu_Etudiant=p.idEtu_Etudiant 
+	JOIN Type_session as ts ON p.idT_Type_Session=ts.idT_Type_Session 
+	JOIN Salle as s ON ent.idS_Salle=s.idS_Salle
+	JOIN ON ; ";
+    $result = mysqli_query($conn, $sql);
+	echo "<ul>";
+	while ($row=mysqli_fetch_array($result)) {
+		echo "<li>\n";
+		echo $row[3]." le ".$row[0]." à ".$row[1]." en ".$row[2]." pour ".$row[4]." ".$row[5];
+		echo "</li>\n";
+	}
+	echo "</ul>";
+?>
+  </br>
+  <!--Accès à la page php por remplir les résultats-->
+  <h3>Remplir les fiches critères</h3>
+	<div> <a href="entretien.php">Entrer les résultats</a> </div>
+</body>
+</html>
