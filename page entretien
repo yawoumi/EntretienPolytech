@@ -1,1 +1,112 @@
 
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>page grille</title>
+	 <meta charset="UTF-8">
+	</head>
+	
+	<?php   
+        /*Connexion à la base de données sur le serveur tp-epua*/
+		$conn = @mysqli_connect("tp-epua:3308", "drouinlo", "ma5yeqs9");    
+		
+		/*connexion à la base de donnée depuis la machine virtuelle INFO642*/
+		/*$conn = @mysqli_connect("localhost", "etu", "bdtw2021");*/  
+
+		if (mysqli_connect_errno()) {
+            $msg = "erreur ". mysqli_connect_error();
+        } else {  
+            $msg = "connecté au serveur " . mysqli_get_host_info($conn);
+            /*Sélection de la base de données*/
+            mysqli_select_db($conn, "drouinlo"); 
+            /*mysqli_select_db($conn, "etu"); */ /*sélection de la base sous la VM info642*/
+		
+            /*Encodage UTF8 pour les échanges avecla BD*/
+            mysqli_query($conn, "SET NAMES UTF8");
+        }
+		
+  ?> 
+	
+	<body>
+	<?php
+	//recupere les donnees liees au type de session
+	$sql1 ="SELECT idT_Type_Session, descriptionT_Type_Session FROM Type_Session";
+	$result1=mysqli_query($conn,$sql1);
+	?>
+
+	<!--creation du formulaire permettant au prof de choisir le type de session qu'il veut -->
+	<form action="info642tableau critère.php" method="post">
+	<label for="session">Choisi un type de session:</label><br>
+	<select id="session" name="session">
+    <?php
+	while ($val1=mysqli_fetch_assoc($result1)){
+		echo "<option value=".$val1['idT_Type_Session'].">".$val1['descriptionT_Type_Session']."</option>";
+	}
+	?>
+	</select>
+	<p><button type="submit" name="submit"> Choisir </button></p>
+	</form>
+	
+	<?php
+	//une fois le type de session valide
+	if (isset ($_POST["session"])){
+		$idsession= $_POST["session"];
+		// on recupere les criteres et leur id necessaire a l'evaluation de ce type de session
+		$sql2 = "SELECT c.idC_Critere,descriptionC_Critere FROM Critere AS c JOIN Possede AS p ON c.idC_Critere=p.idC_Critere JOIN Type_Session AS ts ON ts.idT_Type_Session=p.idT_Type_Session WHERE p.idT_Type_Session=".$idsession.";";
+		$result2=mysqli_query($conn,$sql2);
+		// creation de la grille d'evaluation sous forme de tableau contenant un formulaire
+		echo "<table id='t' style='width:100%'>";
+		echo "<tr>";
+		echo "<th> Critère </th>";
+		echo "<th> Insuffisant </th>";
+		echo "<th> Moyen </th>";
+		echo "<th> Bien </th>";
+		echo "<th> Très bien </th>";
+		echo "</tr>" ;
+		echo "<form method='post' action='info642tableau critère.php'>";
+		while ($val2=mysqli_fetch_assoc($result2)){
+			echo "<tr>";
+			echo "<td>".$val2['descriptionC_Critere']."</td>";
+			echo "<td> <input type='radio' id='valeur' name=".$val2['idC_Critere']." value='5' checked> </td>";
+			echo "<td> <input type='radio' id='valeur' name=".$val2['idC_Critere']." value='10' checked> </td>";
+			echo "<td> <input type='radio' id='valeur' name=".$val2['idC_Critere']." value='15' checked> </td>";
+			echo "<td> <input type='radio' id='valeur' name=".$val2['idC_Critere']." value='20' checked> </td>";
+			echo "</tr>";
+		}	
+		echo "</table>";
+		echo "<p><button type='submit' name='eval'> Entrer </button></p>";
+		echo "</form>";
+	}
+	?>
+	
+	<?php 
+	//si on appuit sur le bouton pour valider la grille 
+	if (isset($_POST["eval"])){
+		$somme=0;
+		$nb=0;
+		//recupere chacune des valeurs correspondant aux criteres et en fait la somme
+		foreach ($_POST as $note){
+			//echo "note".$note."<br>";
+			//echo "nb".$nb."<br>";
+			$somme=$somme+$note;
+			$nb++;
+			//echo "somme".$somme."<br>";
+			}
+		// je divise par nb-1 car $note prend une valeur vide a la fin, nb passe donc 3 fois dans le foreach
+		$moy=$somme/($nb-1);
+		//echo "moy".$moy;
+		//decider dans quel attribut de la bdd on entre la valeur  
+		if ($_POST["name"]='grille1') {
+			$sql3= "INSERT".$moy." INTO grille1 FROM Resultat";
+			$result3 = mysqli_query($conn,$sql3);
+		}
+		//informer la personne que tout marche
+		if ($result3 == 1) {
+			echo "la note a bien été entrée";
+		}
+	}
+	?>
+	</body>
+	</html>
+	
+	
