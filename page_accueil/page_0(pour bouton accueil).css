@@ -1,16 +1,19 @@
 .imag {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   
 }
 
-.imag > img {
-  margin: auto;
-  height: 400px;
+ .imag >img {
+  
+  margin: 30px;
   text-align: center;
-  line-height: 75px;
+  
   
 }
+
+
+
 
 body{
 	max-height:1000px;
