@@ -44,7 +44,7 @@
 	<div class="titre" style="text-align:center;">
 	  
       <p id="text">Projet Entretien</p>
-	  <video id= "bgvideo" preload="auto" loop="" muted="" autoplay="" playsinline=""  style="text-align:center;position:absolute;top:94px;left:50%;bottom:0;transform:translateX(-50%);">
+	  <video id= "bgvideo" preload="auto" width="100%" controls="controls" loop="" muted="" autoplay="" playsinline=""  style="text-align:center;position:absolute;top:94px;left:50%;bottom:0;transform:translateX(-50%);">
                 <source src="HomePolytech.mp4" type="video/mp4">
                 <source src="HomePolytech.webm" type="video/webm">
                 <source src="HomePolytech.ogg" type="video/ogg">                                
@@ -77,7 +77,7 @@
 		</div>
 	
   
-		<div class="con">
+		<div class="con" >
 		<?php
 			if( file_exists("page_".$page.".php") ){ 
 				include("page_".$page.".php");
