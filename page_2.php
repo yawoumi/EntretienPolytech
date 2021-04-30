@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    
+	  <title> Consultation </title>
 	<meta content="info">
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
@@ -28,7 +28,7 @@
             /*Encodage UTF8 pour les échanges avecla BD*/
             mysqli_query($conn, "SET NAMES UTF8");
         }
-		
+	/*	
 	if (isset($_POST["button"])){
 		if (isset($_POST["nom"],$_POST["prenom"],$_POST["id"],$_POST["photo"])){
 			
@@ -47,6 +47,7 @@
 				}
 		}
 	}
+	*/
 
 		
 		
