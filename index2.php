@@ -2,8 +2,8 @@
 
 <html>
   <head>
-    
-	<meta content="info">
+	  <title> Inscription </title>
+    <meta content="info">
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
 
@@ -57,19 +57,7 @@
 			}	
 			}	
 		    
-				
 		
-
-		
-
-			
-			
-			
-		
-	    
-      	
-		
-
 ?>
 
   <form class="box" action="" method="post">
@@ -80,7 +68,7 @@
 	   <input type="file" name="photo" accept="image/*" capture style="color:#3498db;">/>
 		
 	   <input type="submit" name ="button" value="S'enregistrer">
-	   <div><a href="Etudiant.php" style="color:#3498db;">Retour</a></div>
+	   <div><a href="page_2.php" style="color:#3498db;">Retour</a></div>
 		
 	   
   </form>
