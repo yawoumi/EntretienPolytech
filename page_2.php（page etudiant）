@@ -112,7 +112,7 @@
 
 ?>
 
-  <form class="box" action="" method="post">
+  <form class="box1" action="" method="post">
      <h1>Se connecter</h1>
        <input type="text" name="id" placeholder="Identifiant">
        <input type="password" name="pw" placeholder="Mot de passe">
