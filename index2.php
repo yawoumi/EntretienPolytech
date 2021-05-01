@@ -60,7 +60,7 @@
 		
 ?>
 
-  <form class="box" action="" method="post">
+  <form class="box1" action="" method="post">
      <h1>S'enregistrer</h1>
     
 	   <input type="text" name ="nom" placeholder="Entrez votre nom" required>
