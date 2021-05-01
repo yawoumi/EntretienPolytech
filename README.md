@@ -15,6 +15,8 @@ Chaque année, des étudiants se rendent à Polytech Annecy-Chambéry pour passe
 - Evaluations de projets (projet usage, projet R&D, etc.)
 - Evaluation de stages (stage ingénieur, etc.)
 
-Une session d’une demi-journée mobilise trois ressources principales : des étudiants, des enseignants et des salles. L’idée est donc de bloquer les membres du jury sur des demi-journées complètes selon leurs disponibilités et de convoquer les étudiants sur une plage horaire précise.
+Une session d’une demi-journée mobilise trois ressources principales : des étudiants, des enseignants et des salles. L’idée est donc de bloquer les membres du jury sur des demi-journées complètes selon leurs disponibilités et de convoquer les étudiants sur une plage horaire précise. On leur attribue ensuite une salle pour toute la session.
+
+Par ailleurs, nous avons pris l'initiative de fixer la durée d'un entretien à 30 minutes et d'imposer un jury de deux enseignants.
 
 Le projet inclut également une fonctionnalité permettant à chaque membre du jury de réaliser individuellement une évaluation de l’entretien d’un étudiant, à partir d’une série de critères.
