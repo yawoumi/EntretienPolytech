@@ -2,14 +2,14 @@ body{
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background: #34495e;
+  /*background: #34495e;*/
 }
 .box1{
   width: 300px;
   padding: 40px;
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 280px;
+  left: 500px;
   transform: translate(-50%,-50%);
   background: #191919;
   text-align: center;
