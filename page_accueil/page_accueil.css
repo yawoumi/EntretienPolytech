@@ -4,20 +4,20 @@ body{
 
 div .box{
 	width: 1500px;
-    margin: 0px auto 0px auto;
+    margin: 0px auto;
 	/*min-width:1000px;*/
     
 }
 
 
 div .logo{
-	width:100%;
+	
 	border:1px black;
 	height:90px;
 }
 
 div .titre{
-	width:100%;
+	
 	
     border:1px solid black;
     line-height:120px;
@@ -52,7 +52,7 @@ video#bgvideo {
 }
 
 div .contenu{
-	width:100%;
+	
 	
     border:1px black;
     line-height:80px;
@@ -60,19 +60,12 @@ div .contenu{
 	
 }
 
-div .pied{
-	width:100%;
-	min-height:50px;
-    border:1px  black;
-    line-height:20px;
-	
-}
 
 
 .contenu .menu{
 	
 	width:16%;
-    /*height:1000px;*/
+    height:1000px;
     background-color:#dfbe9f;
     float:left;
 	position:absolute;
@@ -82,17 +75,26 @@ div .pied{
 .contenu .con{
 	
 	width:84%;
-    /*height:1000px;*/
+    height:1000px;
     background-color:#e4cbb4;
     float:right;
 	line-height:20px;
 }
 
-/*
+div .pied{
+	
+	height:50px;
+	clear: both;
+    border:1px  black;
+    line-height:20px;
+	
+}
+
+
+
 #menu a{
   text-decoration:none;
 }
-
 ul#lemenu{
   list-style: none;
   margin: 10px 0px 0px 0px;
@@ -103,7 +105,7 @@ ul#lemenu li{
   display: inline;
   
 }
-*/
+
 .btn_menu {
 	-moz-box-shadow: -2px -2px 3px 0px #1c1b18;
 	-webkit-box-shadow: -2px -2px 3px 0px #1c1b18;
@@ -150,7 +152,6 @@ width:170px;
 	position:relative;
 	top:1px;
 }
-
 
 
 
