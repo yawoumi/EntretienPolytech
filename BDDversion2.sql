@@ -152,7 +152,8 @@ CREATE TABLE `Entretien` (
   `dureeEnt_Entretien` int(11) DEFAULT NULL,
   `idR_Resultat` float DEFAULT NULL,
   `idEns_Enseignant1` int(11) DEFAULT NULL,
-  `idEns_Enseignant2` int(11) DEFAULT NULL
+  `idEns_Enseignant2` int(11) DEFAULT NULL,
+  `idEtu_Etudiant` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
