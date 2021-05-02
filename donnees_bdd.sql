@@ -66,7 +66,7 @@ INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Hassani', 'Ya
 INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Pascal', 'Quentin');
 INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Randriamahefa', 'Nomentsoa');
 
-                                                              INSERT INTO Possede (idT_Type_Session, idC_Critere) VALUES (1, 1);
+INSERT INTO Possede (idT_Type_Session, idC_Critere) VALUES (1, 1);
 INSERT INTO Possede (idT_Type_Session, idC_Critere) VALUES (1, 2);
 INSERT INTO Possede (idT_Type_Session, idC_Critere) VALUES (1, 3);
 INSERT INTO Possede (idT_Type_Session, idC_Critere) VALUES (1, 4);
