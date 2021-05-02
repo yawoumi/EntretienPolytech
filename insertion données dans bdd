@@ -58,4 +58,10 @@ INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité des support');
 INSERT INTO Critere (descriptionC_Critere) VALUES ('qualité de l expression');
 INSERT INTO Critere (descriptionC_Critere) VALUES ('reponse aux questions');
 
-
+INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Theze','Doriane');
+INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Yao','Xin');
+INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Drouin','Lola');
+INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Bourabi','Kaoutar');
+INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Hassani', 'Yawoumihani');
+INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Pascal', 'Quentin');
+INSERT INTO Etudiant (nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('Randriamahefa', 'Nomentsoa');
