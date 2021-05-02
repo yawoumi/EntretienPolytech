@@ -41,7 +41,7 @@ mysqli_query($conn, "SET NAMES UTF8");
 	$sql3="SELECT idEns_Enseignant FROM Enseignant WHERE nomEns_Enseignant='".$nom."' AND prenomEns_Enseignant='".$prenom."';";
 	$result3 = mysqli_query($conn, $sql3);
 	$row3 = mysqli_fetch_assoc($result3);
-	$sql33="SELECT DATE('".$dispoE[0]."') as date";
+	$sql33="SELECT DATE('".$dispoE[0]."') as date;";
 	$result33 = mysqli_query($conn, $sql3);
 	$row33 = mysqli_fetch_assoc($result33);
 	echo gettype($row33[0]);
