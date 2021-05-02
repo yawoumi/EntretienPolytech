@@ -20,10 +20,11 @@ mysqli_query($conn, "SET NAMES UTF8");
 	Prénom: <input type="text" name="prenom"><br>
 	<select id="dispoE" name="dispoE">
 	<?php
-	$sql4="SELECT dateH_Horaires, heureH_Horaires FROM Horaires;";
+	$sql4="SELECT dateH_Horaires FROM Horaires;";
 	$result4=mysqli_query($conn, $sql4);
 	while ($row = mysqli_fetch_assoc($result4)) {
-			echo "<option value=".$row['dateH_Horaires'].";".$row['heureH_Horaires']."> Le ".$row['dateH_Horaires']." à ".$row['heureH_Horaires']."</option>";
+			echo "<option value=".$row['dateH_Horaires'].";AM> Le ".$row['dateH_Horaires']." matin</option>";
+			echo "<option value=".$row['dateH_Horaires'].";PM> Le ".$row['dateH_Horaires']." après-midi</option>";
 	}
 	?>
 	</select>
@@ -41,18 +42,9 @@ mysqli_query($conn, "SET NAMES UTF8");
 	$sql3="SELECT idEns_Enseignant FROM Enseignant WHERE nomEns_Enseignant='".$nom."' AND prenomEns_Enseignant='".$prenom."';";
 	$result3 = mysqli_query($conn, $sql3);
 	$row3 = mysqli_fetch_assoc($result3);
-	$sql33="SELECT DATE('".$dispoE[0]."') as date;";
-	$result33 = mysqli_query($conn, $sql3);
-	$row33 = mysqli_fetch_assoc($result33);
-	echo gettype($row33[0]);
 	$sql2= "INSERT INTO DispoEnseignant ('idDEns_DispoEnseignant', 'dateDEns_DispoEnseignant', 'heureD_DispoEnseignant')
-			values (".$row3['idEns_Enseignant'].", ".$row33['date'].", ".$dispoE[1].");";
+			values (".intval($row3['idEns_Enseignant'])."), date(".$dispoE[0]."), ".$dispoE[1].");";
 	$result2 = mysqli_query($conn, $sql2);
-	if ($result2){
-		echo "fait";
-	}else{
-		echo "Raté";
-	}
 	echo "Horaire enregistré.";
 	}
   ?>
