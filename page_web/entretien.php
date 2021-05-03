@@ -60,7 +60,7 @@
 <div>
 <?php   
         /*Connexion à la base de données sur le serveur tp-epua*/
-		$conn = @mysqli_connect("tp-epua:3308", "drouinlo", "ma5yeqs9");    
+		$conn = @mysqli_connect("tp-epua:3308", "login", "mdp");    
 		
 		/*connexion à la base de donnée depuis la machine virtuelle INFO642*/
 		/*$conn = @mysqli_connect("localhost", "etu", "bdtw2021");*/  
