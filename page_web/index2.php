@@ -112,7 +112,7 @@ if (isset($_POST["button"])){
 
    <input type="text" name ="nom" placeholder="Entrez votre nom" required>
    <input type="text" name ="prenom" placeholder="Entrez votre prénom " required>
-   <input type="file" name="photo" accept="image/*" capture style="color:#3498db;">/>
+   <!--<input type="file" name="photo" accept="image/*" capture style="color:#3498db;">/>-->
 	
    <input type="submit" name ="button" value="S'enregistrer">
    <div><a href="page_2.php" style="color:#3498db;">Retour</a></div>
