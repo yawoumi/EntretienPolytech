@@ -9,8 +9,8 @@
  
 <body> 
 <?php
-$conn = @mysqli_connect("tp-epua:3308", "thezed", "w9edpht9") or die ("Impossible de se connecter: ".mysqli_connect_error());
-mysqli_select_db($conn, "thezed") or die("Impossible de sélectionner la base: ".mysqli_connect_error());
+$conn = @mysqli_connect("tp-epua:3308", "login", "mdp") or die ("Impossible de se connecter: ".mysqli_connect_error());
+mysqli_select_db($conn, "login") or die("Impossible de sélectionner la base: ".mysqli_connect_error());
 mysqli_query($conn, "SET NAMES UTF8");
 ?>
   <!--Entrer les disponibilités une à une-->
