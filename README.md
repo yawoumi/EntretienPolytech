@@ -20,3 +20,11 @@ Une session d’une demi-journée mobilise trois ressources principales : des é
 Par ailleurs, nous avons pris l'initiative de fixer la durée d'un entretien à 30 minutes, de laisser 15 minutes de pause au jury entre deux entretiens et d'imposer un jury de deux enseignants.
 
 Le projet inclut également une fonctionnalité permettant à chaque membre du jury de réaliser individuellement une évaluation de l’entretien d’un étudiant, à partir d’une série de critères.
+
+## Utilisation
+
+Pour faire ce projet nous avons utilisé :
+- HTML5
+- CSS
+- PHP 7.4.14
+- PhpMySQL
