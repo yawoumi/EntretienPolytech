@@ -53,16 +53,16 @@
 		
 	if (isset($_POST["button1"])){
 		if (isset($_POST["id"],$_POST["pw"])){
-
 			$id = $_POST["id"];
 			$pw = $_POST["pw"];
 		    
-			$sql1 ="select nomEtu_Etudiant,prenomEtu_Etudiant,photoEtu_Etudiant,nomS_Salle,dateH_Horaires,heureH_Horaires 
-			FROM Etudiant,Salle,Entretien,est_disponible,Horaires 
-			WHERE Etudiant.idEtu_Etudiant = $id
-			AND Salle.idS_Salle = est_disponible.idS_Salle
-			AND est_disponible.idH_Horaires = Horaires.idH_Horaires
-			AND Salle.idS_Salle = Entretien.idS_Salle AND Etudiant.idEtu_Etudiant = Entretien.idEtu_Etudiant";
+			$sql1 ="select nomEtu_Etudiant,prenomEtu_Etudiant,nomS_Salle,dateH_Horaires,heureH_Horaires FROM Etudiant,Salle,Entretien,est_disponible,Horaires,se_deroule
+					WHERE Etudiant.idEtu_Etudiant = '".$id."' 
+					AND Salle.idS_Salle = est_disponible.idS_Salle 
+					AND Horaires.idH_Horaires = est_disponible.idH_Horaires
+					AND Salle.idS_Salle = se_deroule.idS_Salle 
+					AND se_deroule.idH_Horaires = Horaires.idH_Horaires 
+					AND Etudiant.idEtu_Etudiant = Entretien.idEtu_Etudiant;";
 			
 			
 			
@@ -87,13 +87,12 @@
 				
 		}
 		
-		    $sql2 = "select noteR_Resultat FROM Resultat,Etudiant,Entretien 
-		    WHERE Etudiant.idEtu_Etudiant = '$id'
-			AND Etudiant.idEtu_Etudiant = Entretien.idEtu_Etudiant  
-		    AND Entretien.idEnt_Entretien = Resultat.entretien_ident_entretien";
+		    $sql2 = "SELECT noteR_Resultat FROM (SELECT * FROM Etudiant WHERE Etudiant.idEtu_Etudiant = '".$id."') as etu
+			JOIN Entretien as ent ON ent.idEtu_Etudiant=etu.idEtu_Etudiant
+			JOIN Resultat as res ON res.idR_Resultat=ent.idR_Resultat ;";
 		    
 		
-		   $result2 = mysqli_query($conn, $sql2);
+		    $result2 = mysqli_query($conn, $sql2);
 		   
 			
 			while ($row = mysqli_fetch_assoc($result2)) {
