@@ -77,13 +77,13 @@
 	}
 	
 if (isset($_POST["button"])){
-	if (isset($_POST["nom"],$_POST["prenom"],$_POST["photo"])){
+	if (isset($_POST["nom"],$_POST["prenom"])){
 		
 		$nom = $_POST["nom"];
 		$prenom = $_POST["prenom"];
-		$photo = $_POST["photo"];
+		
 	
-		$sql ="INSERT INTO Etudiant(nomEtu_Etudiant,prenomEtu_Etudiant,photoEtu_Etudiant) VALUES ('".$nom."','".$prenom."','".$photo."')";
+		$sql ="INSERT INTO Etudiant(nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('".$nom."','".$prenom."')";
 		//echo $sql;
 		$result = mysqli_query($conn, $sql);
 		
