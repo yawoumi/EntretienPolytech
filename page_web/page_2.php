@@ -112,11 +112,11 @@
 
   <form class="box1" action="" method="post">
      <h1>Se connecter</h1>
-       <input type="text" name="id" placeholder="Identifiant">
+       <input type="number" name="id" placeholder="Identifiant">
        <input type="password" name="pw" placeholder="Mot de passe">
        <input type="submit" name="button1" value="Se connecter">
 	   
-	   <div class="signup-link" style="color:white;"> Vous n'êtes pas un membre ?<a href="index2.php" style="color:#3498db;">Inscrivez-vous</a</div>
+	   <div class="signup-link" style="color:black;"> Vous n'êtes pas un membre ?<a href="index2.php" style="color:#3498db;">Inscrivez-vous</a</div>
 	  
 	   
 		
