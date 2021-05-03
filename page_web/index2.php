@@ -81,28 +81,24 @@ if (isset($_POST["button"])){
 		
 		$nom = $_POST["nom"];
 		$prenom = $_POST["prenom"];
-		
 	
-		$sql ="INSERT INTO Etudiant(nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('".$nom."','".$prenom."')";
+		$sql ="INSERT INTO Etudiant(nomEtu_Etudiant,prenomEtu_Etudiant) VALUES ('".$nom."','".$prenom."');";
 		//echo $sql;
 		$result = mysqli_query($conn, $sql);
-		
-		if ($result == TRUE) {
+		if ($result == True) {
 			echo "Bien Ajouter !";
+		}
 			
-			}
-			
-		$sql1 = "select idEtu_Etudiant From Etudiant 
-		WHERE Etudiant.nomEtu_Etudiant = '$nom' AND Etudiant.prenomEtu_Etudiant = '$prenom' ";
-		
+		$sql1 = "SELECT idEtu_Etudiant FROM Etudiant WHERE Etudiant.nomEtu_Etudiant = '".$nom."' AND Etudiant.prenomEtu_Etudiant = '".$prenom."';";
+		//echo $sql1;
 		
 		$result1 = mysqli_query($conn, $sql1);			
-		 while ($row = mysqli_fetch_assoc($result1)){
+		while ($row = mysqli_fetch_assoc($result1)){
 			echo "Votre identifiant :".$row['idEtu_Etudiant'];
 		}
 		
-		}	
-		}	
+	}	
+}	
 		
 	
 ?>
@@ -136,20 +132,3 @@ if (isset($_POST["button"])){
   
   </body>
 </html>  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
