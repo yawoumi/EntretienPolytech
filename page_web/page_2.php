@@ -51,13 +51,13 @@
 		
 		
 		
-	if (isset($_POST["button1"])){
+		if (isset($_POST["button1"])){
 		if (isset($_POST["id"],$_POST["pw"])){
 			$id = $_POST["id"];
 			$pw = $_POST["pw"];
 		    
 			$sql1 ="select nomEtu_Etudiant,prenomEtu_Etudiant,nomS_Salle,dateH_Horaires,heureH_Horaires FROM Etudiant,Salle,Entretien,est_disponible,Horaires,se_deroule
-					WHERE Etudiant.idEtu_Etudiant = '".$id."' 
+					WHERE Etudiant.idEtu_Etudiant = ".$id." 
 					AND Salle.idS_Salle = est_disponible.idS_Salle 
 					AND Horaires.idH_Horaires = est_disponible.idH_Horaires
 					AND Salle.idS_Salle = se_deroule.idS_Salle 
@@ -67,34 +67,35 @@
 			
 			
 			$result1 = mysqli_query($conn, $sql1);
+			echo "</br>";
 			while ($row = mysqli_fetch_assoc($result1)) {
-			    echo '<table>';
-				echo '<tr>';
-				echo '<th> Nom </th>';
-				echo '<th> Prenom </th>';
-				echo '<th> Salle </th>';
-				echo '<th> Date </th>';
-				echo '<th> Heure </th>';
+			    echo '<table id="table">';
+				echo '<tr id="tr">';
+				echo '<th id="th"> Nom </th>';
+				echo '<th id="th"> Prenom </th>';
+				echo '<th id="th"> Salle </th>';
+				echo '<th id="th"> Date </th>';
+				echo '<th id="th"> Heure </th>';
 				echo '</tr>';
-				echo '<tr>';
-				echo '<td> '.$row["nomEtu_Etudiant"].' </td>';
-				echo '<td> '.$row["prenomEtu_Etudiant"].' </td>';
-				echo '<td> '.$row["nomS_Salle"].' </td>';
-				echo '<td> '.$row["dateH_Horaires"].' </td>';
-				echo '<td> '.$row["heureH_Horaires"].'</td>';
+				echo '<tr id="tr">';
+				echo '<td id="td"> '.$row["nomEtu_Etudiant"].' </td>';
+				echo '<td id="td">'.$row["prenomEtu_Etudiant"].' </td>';
+				echo '<td id="td"> '.$row["nomS_Salle"].' </td>';
+				echo '<td id="td"> '.$row["dateH_Horaires"].' </td>';
+				echo '<td id="td"> '.$row["heureH_Horaires"].'</td>';
 				echo '</tr>';
 				echo '</table>';
 				
 		}
 		
-		    $sql2 = "SELECT noteR_Resultat FROM (SELECT * FROM Etudiant WHERE Etudiant.idEtu_Etudiant = '".$id."') as etu
+		    $sql2 = "SELECT noteR_Resultat FROM (SELECT * FROM Etudiant WHERE Etudiant.idEtu_Etudiant = ".$id.") as etu
 			JOIN Entretien as ent ON ent.idEtu_Etudiant=etu.idEtu_Etudiant
 			JOIN Resultat as res ON res.idR_Resultat=ent.idR_Resultat ;";
 		    
 		
 		    $result2 = mysqli_query($conn, $sql2);
 		   
-			
+			echo "<div>Vous avez obtenu la note de : </div>";
 			while ($row = mysqli_fetch_assoc($result2)) {
 			    echo '<li>'.$row['noteR_Resultat'].'</li>';
 		
