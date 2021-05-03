@@ -1,0 +1,21 @@
+.imag {
+  display: flex;
+  flex-wrap: nowrap;
+  
+}
+
+ .imag >img {
+  
+  margin: 30px;
+  text-align: center;
+  
+  
+}
+
+
+
+
+body{
+	max-height:1000px;
+	margin:0;
+}
