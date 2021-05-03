@@ -59,18 +59,18 @@
 			<?php
  
  /*Connexion à la base de données sur le serveur tp-epua*/
-	$conn = @mysqli_connect("tp-epua:3308", "drouinlo", "ma5yeqs9");    
+	$conn = @mysqli_connect("tp-epua:3308", "login", "mdp");    
 	
 	/*connexion à la base de donnée depuis la machine virtuelle INFO642*/
-	/*$conn = @mysqli_connect("localhost", "bourabik", "xe7emkea");*/  
+	/*$conn = @mysqli_connect("localhost", "login", "mdp");*/  
 
 	if (mysqli_connect_errno()) {
 		$msg = "erreur ". mysqli_connect_error();
 	} else {  
 		$msg = "connecté au serveur " . mysqli_get_host_info($conn);
 		/*Sélection de la base de données*/
-		mysqli_select_db($conn, "bourabik"); 
-		/*mysqli_select_db($conn, "bourabik"); */ /*sélection de la base sous la VM info642*/
+		mysqli_select_db($conn, "login"); 
+		/*mysqli_select_db($conn, "login"); */ /*sélection de la base sous la VM info642*/
 	
 		/*Encodage UTF8 pour les échanges avecla BD*/
 		mysqli_query($conn, "SET NAMES UTF8");
