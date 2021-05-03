@@ -15,7 +15,7 @@ mysqli_query($conn, "SET NAMES UTF8");
 ?>
   <!--Entrer les disponibilités une à une-->
 	<h2>Sélectionner une disponibilité</h2>
-	<form action="Enseignant.php" method="post">
+	<form action="page_accueil.php?page=1" method="post">
 	Nom: <input type="text" name="nom"><br>
 	Prénom: <input type="text" name="prenom"><br>
 	<select id="dispoE" name="dispoE">
@@ -48,7 +48,7 @@ mysqli_query($conn, "SET NAMES UTF8");
 	}
   ?>
   <h2>Mes horaires</h2>
-  <form action="Enseignant.php" method="post">
+  <form action="page_accueil.php?page=1" method="post">
 	<p>Veuillez entre votre nom et prénom:</p>
 	Nom: <input type="text" name="nom"><br>
 	Prénom: <input type="text" name="prenom"><br>
