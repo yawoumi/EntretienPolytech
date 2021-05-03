@@ -115,7 +115,7 @@ if (isset($_POST["button"])){
    <!--<input type="file" name="photo" accept="image/*" capture style="color:#3498db;">/>-->
 	
    <input type="submit" name ="button" value="S'enregistrer">
-   <div><a href="page_2.php" style="color:#3498db;">Retour</a></div>
+   <!--<div><a href="page_2.php" style="color:#3498db;">Retour</a></div>-->
 	
    
 </form>
