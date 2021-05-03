@@ -9,21 +9,19 @@ div .box{
     
 }
 
+#table,#tr,#th,#td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
 
-div .logo{
-	
+div .logo{	
 	border:1px black;
 	height:90px;
 }
 
 div .titre{
-	
-	
     border:1px solid black;
     line-height:120px;
-	
-	
-	
 }
 
 div .titre #text{
@@ -52,12 +50,9 @@ video#bgvideo {
 }
 
 div .contenu{
-	
-	
     border:1px black;
     line-height:80px;
 	position:relative;
-	
 }
 
 
@@ -88,6 +83,14 @@ div .pied{
     border:1px  black;
     line-height:20px;
 	
+}
+
+
+
+
+
+table .t{
+	border: 1px solid black;
 }
 
 
@@ -154,13 +157,52 @@ width:170px;
 }
 
 
-
-
-
-
-
-
-
-
-
-
+.box1{
+	width: 300px;
+	padding: 40px;
+	position: absolute;
+	top: 250px;
+	left: 500px;
+	transform: translate(-50%,-50%);
+	text-align: center;
+  }
+  .box1 h1{
+	color: black;
+	text-transform: uppercase;
+	font-weight: 500;
+  }
+  .box1 input[type = "text"],.box input[type = "password"]{
+	border:0;
+	background: none;
+	display: block;
+	margin: 20px auto;
+	text-align: center;
+	border: 2px solid #3498db;
+	padding: 14px 10px;
+	width: 200px;
+	outline: none;
+	color: black;
+	border-radius: 24px;
+	transition: 0.25s;
+  }
+  .box1 input[type = "text"]:focus,.box input[type = "password"]:focus{
+	width: 280px;
+	border-color: #2ecc71;
+  }
+  .box1 input[type = "submit"]{
+	border:0;
+	background: none;
+	display: block;
+	margin: 20px auto;
+	text-align: center;
+	border: 2px solid #2ecc71;
+	padding: 14px 40px;
+	outline: none;
+	color: white;
+	border-radius: 24px;
+	transition: 0.25s;
+	cursor: pointer;
+  }
+  .box1 input[type = "submit"]:hover{
+	background: #2ecc71;
+  }
