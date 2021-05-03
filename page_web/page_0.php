@@ -12,6 +12,7 @@
 		p{font-size:20px;}
 		.imag{height: 350px;}
     
+
 		
 	</style>
   </head>
@@ -40,5 +41,10 @@
   <img  style="height:310px"  src="Woofy.jpg" > 
   <img  style="height:310px"  src="reu1.jpg" > 	
 </div>
+
   </body>
 </html>  
+  
+  
+  
+
