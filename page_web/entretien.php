@@ -294,20 +294,19 @@ if ( isset ( $_POST["entretien"], $_POST["nom"])){ /* On part du principe pour l
         $moy=$somme/($nb); // Pas besoin du -1 car on augemente par $nb si la note est NULL
         //echo "moy".$moy;
         //decider dans quel attribut de la bdd on entre la valeur  
-		echo $_POST["name_grille"];
         if ($_POST["name_grille"]="grille1") {
-			echo $_POST["name_grille"];
-			echo "choc";
-            $sql_grille= "INSERT INTO Resultat (grille1_Resultat) VALUES ($moy)"; //Insère la moyenne de la fiche de résultat au bon endroit, il faudrait que ce soit un UPDATE si la fiche de résultat est déjà crée 
-			//echo $sql_grille;
-            $result_grille = mysqli_query($conn,$sql_grille);
+		//echo $_POST["name_grille"];
+		//echo "choc";
+            	$sql_grille= "INSERT INTO Resultat (grille1_Resultat) VALUES ($moy)"; //Insère la moyenne de la fiche de résultat au bon endroit, il faudrait que ce soit un UPDATE si la fiche de résultat est déjà crée 
+		//echo $sql_grille;
+           	$result_grille = mysqli_query($conn,$sql_grille);
         }
-		else if ($_POST["name_grille"]="grille2") {
-			$_POST["name_grille"];
-			echo "bla";
-            $sql_grille= "INSERT INTO Resultat (grille2_Resultat) VALUES ($moy)"; //Insère la moyenne de la fiche de résultat au bon endroit, il faudrait que ce soit un UPDATE si la fiche de résultat est déjà crée 
-			//echo $sql_grille;
-            $result_grille = mysqli_query($conn,$sql_grille);
+	else if ($_POST["name_grille"]="grille2") {
+		//echo $_POST["name_grille"];
+		//echo "bla";
+        	$sql_grille= "INSERT INTO Resultat (grille2_Resultat) VALUES ($moy)"; //Insère la moyenne de la fiche de résultat au bon endroit, il faudrait que ce soit un UPDATE si la fiche de résultat est déjà crée 
+		//echo $sql_grille;
+            	$result_grille = mysqli_query($conn,$sql_grille);
         }
         //informer la personne que tout marche
         if ($result_grille == 1) {
