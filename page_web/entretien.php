@@ -70,7 +70,7 @@
         } else {  
             $msg = "connecté au serveur " . mysqli_get_host_info($conn);
             /*Sélection de la base de données*/
-            mysqli_select_db($conn, "drouinlo"); 
+            mysqli_select_db($conn, "login"); 
             /*mysqli_select_db($conn, "etu"); */ /*sélection de la base sous la VM info642*/
 		
             /*Encodage UTF8 pour les échanges avecla BD*/
