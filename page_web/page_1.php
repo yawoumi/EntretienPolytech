@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>page_enseignant</title>
+    <title></title>
     <meta content="info">
     <meta charset="UTF-8">
     <link rel="stylesheet" href="page_accueil.css">
