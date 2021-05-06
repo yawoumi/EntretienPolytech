@@ -283,7 +283,7 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
         echo "<th id='th'> Bien </th>";
         echo "<th id='th'> Très bien </th>";
         echo "</tr>" ;
-        echo "<form method='post' action='entretienT.php'>";
+        echo "<form method='post' action='entretien.php'>";
 		
         while ($val=mysqli_fetch_assoc($result_crit)){
             echo "<tr id='tr'>";
