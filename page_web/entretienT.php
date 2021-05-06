@@ -78,7 +78,7 @@
   ?> 
   
   
-  <form action="entretienT.php" method="post"> <!-- Menu déroulant permettant à l'enseignant de s'identifier -->
+ <form action="entretienT.php" method="post"> <!-- Menu déroulant permettant à l'enseignant de s'identifier -->
   
 	<label> Enseignant : </label>
 	<select name = "idEns">
@@ -86,7 +86,7 @@
 		
 		<?php
 
-		$sql_ens = "SELECT idEns_Enseignant, prenomEns_Enseignant, nomEns_Enseignant  FROM enseignant";
+		$sql_ens = "SELECT idEns_Enseignant, prenomEns_Enseignant, nomEns_Enseignant  FROM Enseignant";
 		$result_ens = mysqli_query($conn, $sql_ens);
 		
 		while ($val = mysqli_fetch_array($result_ens)) {
@@ -274,23 +274,23 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
         $result_crit=mysqli_query($conn,$sql_crit);
 		
         #Création de la grille d'évaluation sous forme de tableau contenant un formulaire
-        echo "<table id='t' style='width:100%'>";
-        echo "<tr>";
-        echo "<th> Critère </th>"; 
-        echo "<th> Insuffisant </th>"; #On évalue les critères suivant quatres niveaux différents
-        echo "<th> Moyen </th>";
-        echo "<th> Bien </th>";
-        echo "<th> Très bien </th>";
+        echo "<table id='table' style='width:100%'>";
+        echo "<tr id='tr'>";
+        echo "<th id='th'> Critère </th>"; 
+        echo "<th id='th'> Insuffisant </th>"; #On évalue les critères suivant quatres niveaux différents
+        echo "<th id='th'> Moyen </th>";
+        echo "<th id='th'> Bien </th>";
+        echo "<th id='th'> Très bien </th>";
         echo "</tr>" ;
         echo "<form method='post' action='entretienT.php'>";
 		
         while ($val=mysqli_fetch_assoc($result_crit)){
-            echo "<tr>";
-            echo "<td>".$val['descriptionC_Critere']."</td>";
-            echo "<td> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='5' checked> </td>"; #Chaque niveau d'évalutation est assigné à une note
-            echo "<td> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='10' checked> </td>";
-            echo "<td> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='15' checked> </td>";
-            echo "<td> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='20' checked> </td>";
+            echo "<tr id='tr'>";
+            echo "<td id='td'>".$val['descriptionC_Critere']."</td>";
+            echo "<td id='td'> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='5' checked> </td>"; #Chaque niveau d'évalutation est assigné à une note
+            echo "<td id='td'> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='10' checked> </td>";
+            echo "<td id='td'> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='15' checked> </td>";
+            echo "<td id='td'> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='20' checked> </td>";
             echo "</tr>";
         }    
         echo "</table>";
@@ -375,5 +375,3 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
   
   </body>
 </html>  
-
-
