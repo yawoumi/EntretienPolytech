@@ -27,4 +27,11 @@ Pour faire ce projet nous avons utilisé :
 - HTML5
 - CSS
 - PHP 7.4.14
-- PhpMySQL
+- PhpMyAdmin
+
+Afin de créer la base de données contenant les tables, procédures, fonctions et données, exécutez le code bdd.sql contenu dans le dossier Data_Base dans PhpMyAdmin.
+Une fois fait, récupérez les images et vidéo contenues dans le dossier Data et enregistrez les dans un dossier dans votre serveur.
+Pour créer le site web vous aurez besoin de tous les fichiers contenus dans page_web. Enregistrez-les sur votre serveur dans le même dossier que les images.
+Faites attention si vous changez les noms de fichiers. Le lien entre les fichiers PHP, HTML et CSS se fait à l'aide des noms des fichiers. Assurez-vous donc de sauvegarder les programmes avec le nom que nous leur avons donnés dans notre github.
+Une fois tout ceci fait, vous devrez entrer le login et le mot de passe de votre base de données dans la partie connection à la base de données des pages web.
+Enfin, il vous suffira d'ouvrir la page d'accueil du site (fichier page_accueil.php) dans votre serveur web et vous aurez accès aux différentes pages du sites.
