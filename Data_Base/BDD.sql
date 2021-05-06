@@ -18,14 +18,14 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `hassayaw`
+-- Base de données : `login`
 --
 
 DELIMITER $$
 --
 -- Procédures
 --
-CREATE DEFINER=`hassayaw`@`%` PROCEDURE `generate_entretien` (IN `idEtu` INT)  BEGIN
+CREATE DEFINER=`login`@`%` PROCEDURE `generate_entretien` (IN `idEtu` INT)  BEGIN
 	/* PARTIE DECLARATION DES VARIABLES */
 	DECLARE idEntretien int;
 	DECLARE boolAffectation boolean;
@@ -84,7 +84,7 @@ CREATE DEFINER=`hassayaw`@`%` PROCEDURE `generate_entretien` (IN `idEtu` INT)  B
 	END IF;
 END$$
 
-CREATE DEFINER=`hassayaw`@`%` PROCEDURE `insertion_DispoEnseignant` ()  begin
+CREATE DEFINER=`login`@`%` PROCEDURE `insertion_DispoEnseignant` ()  begin
 	CREATE VIEW DatetoDispo AS
 	SELECT DISTINCT dateH_Horaires FROM Horaires;
 
@@ -101,12 +101,12 @@ CREATE DEFINER=`hassayaw`@`%` PROCEDURE `insertion_DispoEnseignant` ()  begin
 	DROP TABLE DemiJournee;
 end$$
 
-CREATE DEFINER=`hassayaw`@`%` PROCEDURE `insertion_estDispo` ()  begin
+CREATE DEFINER=`login`@`%` PROCEDURE `insertion_estDispo` ()  begin
 	INSERT INTO est_disponible(idH_Horaires,idS_Salle,Dispo_est_disponible)
 	SELECT h.idH_Horaires, s.idS_Salle, TRUE FROM Horaires h, Salle s;
 end$$
 
-CREATE DEFINER=`hassayaw`@`%` PROCEDURE `insertion_Horaires` (IN `heureDebut` TIME, IN `dateDebut` DATE, IN `nb` INT)  begin
+CREATE DEFINER=`login`@`%` PROCEDURE `insertion_Horaires` (IN `heureDebut` TIME, IN `dateDebut` DATE, IN `nb` INT)  begin
 	/*Déclaration des variables*/
 	DECLARE intervalle time;
 	DECLARE heure time;
