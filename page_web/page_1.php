@@ -75,13 +75,14 @@ mysqli_query($conn, "SET NAMES UTF8");
 		WHERE nomEns_Enseignant='".$nom."' AND prenomEns_Enseignant='".$prenom."';";
   $result1 = mysqli_query($conn, $sql1);
   echo "<table id='table'> 
-        <tr>
-        <th>Date</th>
-		<th>Heure</th>
+        <tr id='tr'>
+        <th id='th'>Date</th>
+		<th id='th'>Heure</th>
         </tr>";
         while ($row = mysqli_fetch_assoc($result1)) { 
-        echo "<tr>\n";
-        echo "<td>".$row['dateDEns_DispoEnseignant']."</td>"." <td>". $row['heureD_DispoEnseignant']."</td>";
+        echo "<tr id='tr'>\n";
+        echo "<td id='td'>".$row['dateDEns_DispoEnseignant']."</td>";
+		echo "<td id='td'>". $row['heureD_DispoEnseignant']."</td>";
         echo "</tr>\n";
     }
     echo "</table>";
