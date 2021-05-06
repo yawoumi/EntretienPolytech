@@ -162,7 +162,7 @@ echo "<form action='entretien.php' method='post'>"; #Menu déroulant permettant 
 	echo "</fieldset>";
 	
 	#On estime qu'un entretien n'est pas passé tant que les deux grilles de notations ne sont pas remplies, ce menu affiche donc les étudiants participant à des entretiens dont au moins une des deux grille est vide et si l'enseignant y participe
-	$sqlEEC = "SELECT ent.idEnt_Entretien, etu.prenomEtu_Etudiant, etu.nomEtu_Etudiant  FROM Entretien ent JOIN Etudiant etu ON etu.idEtu_Etudiant = ent.idEtu_Etudiant JOIN resultat r ON r.idR_Resultat = ent.idR_Resultat,
+	$sqlEEC = "SELECT ent.idEnt_Entretien, etu.prenomEtu_Etudiant, etu.nomEtu_Etudiant  FROM Entretien ent JOIN Etudiant etu ON etu.idEtu_Etudiant = ent.idEtu_Etudiant JOIN Resultat r ON r.idR_Resultat = ent.idR_Resultat,
 	Enseignant ens WHERE ens.idEns_Enseignant = {$_POST["idEns"]} AND ({$_POST["idEns"]} = ent.idEns_Enseignant1 OR {$_POST["idEns"]} = ent.idEns_Enseignant2) AND (r.grille1_Resultat IS NULL OR r.grille2_Resultat IS NULL)";
 	
 	$resultEEC = mysqli_query($conn, $sqlEEC);
