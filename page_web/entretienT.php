@@ -82,7 +82,7 @@
   ?> 
   
   
-  <form action="entretienT.php" method="post"> <!-- Menu déroulant permettant à l'enseignant de s'identifier -->
+  <form action="entretien.php" method="post"> <!-- Menu déroulant permettant à l'enseignant de s'identifier -->
   
 	<label> Enseignant : </label>
 	<select name = "idEns">
@@ -90,7 +90,7 @@
 		
 		<?php
 
-		$sql_ens = "SELECT idEns_Enseignant, prenomEns_Enseignant, nomEns_Enseignant  FROM enseignant";
+		$sql_ens = "SELECT idEns_Enseignant, prenomEns_Enseignant, nomEns_Enseignant FROM Enseignant";
 		$result_ens = mysqli_query($conn, $sql_ens);
 		
 		while ($val = mysqli_fetch_array($result_ens)) {
@@ -109,7 +109,7 @@
 	if ( isset ( $_POST["idEns"])){ #Après que l'enseigant se soit identifié
 		
 		$id_Ens = $_POST["idEns"];
-		$sql_nom_ens = "SELECT prenomEns_Enseignant, nomEns_Enseignant FROM enseignant WHERE $id_Ens = idEns_Enseignant";
+		$sql_nom_ens = "SELECT prenomEns_Enseignant, nomEns_Enseignant FROM Enseignant WHERE $id_Ens = idEns_Enseignant";
 		$result_nom_ens = mysqli_query($conn, $sql_nom_ens);
 		
 		while ($val = mysqli_fetch_array($result_nom_ens)) {
@@ -131,7 +131,7 @@ if ( isset ( $_POST["idEns"])){ #Après que l'enseigant se soit identifié
 	
 	$_SESSION["id_Ens"] = $_POST["idEns"]; #On sauvegarde cette l'id de l'enseignant dans la session
 	
-	echo "<form action='entretienT.php' method='post'>"; #Menu déroulant permettant de chosir l'entretien dont on veut retrouver les résultats à partir du prénom et du nom de l'étudiant
+	echo "<form action='entretien.php' method='post'>"; #Menu déroulant permettant de chosir l'entretien dont on veut retrouver les résultats à partir du prénom et du nom de l'étudiant
 
 	echo "<label> Résultats des entretiens passés : </label>";
 	echo "<select name = 'entretien'>";
@@ -152,7 +152,7 @@ if ( isset ( $_POST["idEns"])){ #Après que l'enseigant se soit identifié
 	echo "<button type='submit'>Envoyer</button>";
 echo "</form>";
 
-echo "<form action='entretienT.php' method='post'>"; #Menu déroulant permettant de choisir l'entretien en cours afin de remplir la grille de notation
+echo "<form action='entretien.php' method='post'>"; #Menu déroulant permettant de choisir l'entretien en cours afin de remplir la grille de notation
 
 	echo "<fieldset>";
 		echo "<legend>Entretien en cours</legend>";
@@ -164,15 +164,13 @@ echo "<form action='entretienT.php' method='post'>"; #Menu déroulant permettant
 	#On estime qu'un entretien n'est pas passé tant que les deux grilles de notations ne sont pas remplies, ce menu affiche donc les étudiants participant à des entretiens dont au moins une des deux grille est vide et si l'enseignant y participe
 	$sqlEEC = "SELECT ent.idEnt_Entretien, etu.prenomEtu_Etudiant, etu.nomEtu_Etudiant  FROM Entretien ent JOIN Etudiant etu ON etu.idEtu_Etudiant = ent.idEtu_Etudiant JOIN resultat r ON r.idR_Resultat = ent.idR_Resultat,
 	Enseignant ens WHERE ens.idEns_Enseignant = {$_POST["idEns"]} AND ({$_POST["idEns"]} = ent.idEns_Enseignant1 OR {$_POST["idEns"]} = ent.idEns_Enseignant2) AND (r.grille1_Resultat IS NULL OR r.grille2_Resultat IS NULL)";
-	$resultEEC = mysqli_query($conn, $sqlEEC);
 	
+	$resultEEC = mysqli_query($conn, $sqlEEC);
 	while ($val = mysqli_fetch_array($resultEEC)) { /* On affiche les entretiens en question */
 		
 		echo "<option value =".$val['idEnt_Entretien']."> {$val["prenomEtu_Etudiant"]} {$val["nomEtu_Etudiant"]} </option>";
-		
 	}
 	echo "</select>";
-	
 	echo "<button type='submit'>Envoyer</button>";
 echo "</form>";
 }
@@ -183,9 +181,9 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
 	/* On part du principe pour le moment qu'un étudiant ne passe qu'un entretien*/
 	
 	#Il y a deux enseignants qui juge un entretien, il faut donc identifier si l'enseignant est l'enseigant n°1 ou n°2 de l'entretien en question.
-	$sql_id_ens1 = "SELECT idEns_Enseignant FROM enseignant JOIN entretien ON idEns_Enseignant = idEns_Enseignant1 WHERE {$_POST["entretien"]} = idEnt_Entretien";
+	$sql_id_ens1 = "SELECT idEns_Enseignant FROM Enseignant JOIN Entretien ON idEns_Enseignant = idEns_Enseignant1 WHERE {$_POST["entretien"]} = idEnt_Entretien";
 	$result_id_ens1 = mysqli_query($conn, $sql_id_ens1);
-	$sql_id_ens2 = "SELECT idEns_Enseignant FROM enseignant JOIN entretien ON idEns_Enseignant = idEns_Enseignant2 WHERE {$_POST["entretien"]} = idEnt_Entretien";
+	$sql_id_ens2 = "SELECT idEns_Enseignant FROM Enseignant JOIN Entretien ON idEns_Enseignant = idEns_Enseignant2 WHERE {$_POST["entretien"]} = idEnt_Entretien";
 	$result_id_ens2 = mysqli_query($conn, $sql_id_ens2);
 	#echo $sql_nom_ens2. "</br>";
 	
@@ -211,12 +209,12 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
 	}
 	
 	
-	$sql = "SELECT r.idR_Resultat FROM Resultat r JOIN Entretien e ON r.idR_Resultat = e.idR_Resultat WHERE r.idR_Resultat = (SELECT idR_Resultat FROM entretien WHERE {$_POST["entretien"]} = idEnt_Entretien)"; /* Retourne les idR pour les deux résultats de l'entretien sélectionné*/
+	$sql = "SELECT r.idR_Resultat FROM Resultat r JOIN Entretien e ON r.idR_Resultat = e.idR_Resultat WHERE r.idR_Resultat = (SELECT idR_Resultat FROM Entretien WHERE {$_POST["entretien"]} = idEnt_Entretien)"; /* Retourne les idR pour les deux résultats de l'entretien sélectionné*/
 	$result = mysqli_query($conn, $sql);
 	
 	$sql_session = "SELECT idT_Type_Session FROM Passe WHERE idEtu_Etudiant = (SELECT idEtu_Etudiant FROM Entretien WHERE idEnt_Entretien = {$_POST["entretien"]})"; /* Retourne l'id de la session correspondant à l'étudiant afin d'adopter le bon affichage des critères*/ 
 	
-	$sql_nomsession = "SELECT descriptionT_Type_Session FROM type_session WHERE ($sql_session) = idT_Type_Session"; #Retourne la description de la session de l'entretien
+	$sql_nomsession = "SELECT descriptionT_Type_Session FROM Type_Session WHERE ($sql_session) = idT_Type_Session"; #Retourne la description de la session de l'entretien
 	$result_nomsession = mysqli_query($conn, $sql_nomsession);
 		
 	$sql_resultats = "SELECT grille1_Resultat, grille2_Resultat, noteR_Resultat FROM Resultat WHERE ($sql) = idR_Resultat"; /* Retourne le contenu de la fiche de résultats*/
@@ -240,12 +238,12 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
 		
 	#On est confronté au même problème, il faut identifier l'enseignant afin de savoir dans quel emplacement de la base de donnée il faudra rentrer sa note
 	
-	$sql_id_ens1 = "SELECT idEns_Enseignant FROM enseignant JOIN entretien ON idEns_Enseignant = idEns_Enseignant1 WHERE {$_POST["idEnt_Entretien"]} = idEnt_Entretien";
+	$sql_id_ens1 = "SELECT idEns_Enseignant FROM Enseignant JOIN Entretien ON idEns_Enseignant = idEns_Enseignant1 WHERE {$_POST["idEnt_Entretien"]} = idEnt_Entretien";
 	$result_id_ens1 = mysqli_query($conn, $sql_id_ens1);
-	$sql_id_ens2 = "SELECT idEns_Enseignant FROM enseignant JOIN entretien ON idEns_Enseignant = idEns_Enseignant2 WHERE {$_POST["idEnt_Entretien"]} = idEnt_Entretien";
+	$sql_id_ens2 = "SELECT idEns_Enseignant FROM Enseignant JOIN Entretien ON idEns_Enseignant = idEns_Enseignant2 WHERE {$_POST["idEnt_Entretien"]} = idEnt_Entretien";
 	$result_id_ens2 = mysqli_query($conn, $sql_id_ens2);
 	
-	$sql_id_res = "SELECT r.idR_Resultat FROM resultat r JOIN entretien e ON r.idR_Resultat = e.idR_Resultat";
+	$sql_id_res = "SELECT r.idR_Resultat FROM Resultat r JOIN Entretien e ON r.idR_Resultat = e.idR_Resultat";
 	$result_id_res = mysqli_query($conn, $sql_id_res);
 	
 	while ($val = mysqli_fetch_array($result_id_res)) {
@@ -273,27 +271,27 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
 	}
 	
         #On recupere les critères et leur id necessaires à l'évaluation de ce type de session
-        $sql_crit = "SELECT c.idC_Critere,descriptionC_Critere FROM Critere AS c JOIN Possede AS p ON c.idC_Critere=p.idC_Critere JOIN Type_Session AS ts ON ts.idT_Type_Session=p.idT_Type_Session WHERE p.idT_Type_Session = (SELECT idT_Type_Session FROM passe p JOIN entretien idE ON p.idEtu_Etudiant = idE.idEtu_Etudiant)";
+        $sql_crit = "SELECT c.idC_Critere,descriptionC_Critere FROM Critere AS c JOIN Possede AS p ON c.idC_Critere=p.idC_Critere JOIN Type_Session AS ts ON ts.idT_Type_Session=p.idT_Type_Session WHERE p.idT_Type_Session = (SELECT idT_Type_Session FROM Passe p JOIN Entretien idE ON p.idEtu_Etudiant = idE.idEtu_Etudiant)";
         $result_crit=mysqli_query($conn,$sql_crit);
 		
         #Création de la grille d'évaluation sous forme de tableau contenant un formulaire
-        echo "<table id='t' style='width:100%'>";
-        echo "<tr>";
-        echo "<th> Critère </th>"; 
-        echo "<th> Insuffisant </th>"; #On évalue les critères suivant quatres niveaux différents
-        echo "<th> Moyen </th>";
-        echo "<th> Bien </th>";
-        echo "<th> Très bien </th>";
+        echo "<table id='table' style='width:100%'>";
+        echo "<tr id='tr'>";
+        echo "<th id='th'> Critère </th>"; 
+        echo "<th id='th'> Insuffisant </th>"; #On évalue les critères suivant quatres niveaux différents
+        echo "<th id='th'> Moyen </th>";
+        echo "<th id='th'> Bien </th>";
+        echo "<th id='th'> Très bien </th>";
         echo "</tr>" ;
         echo "<form method='post' action='entretienT.php'>";
 		
         while ($val=mysqli_fetch_assoc($result_crit)){
-            echo "<tr>";
-            echo "<td>".$val['descriptionC_Critere']."</td>";
-            echo "<td> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='5' checked> </td>"; #Chaque niveau d'évalutation est assigné à une note
-            echo "<td> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='10' checked> </td>";
-            echo "<td> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='15' checked> </td>";
-            echo "<td> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='20' checked> </td>";
+            echo "<tr id='tr'>";
+            echo "<td id='td'>".$val['descriptionC_Critere']."</td>";
+            echo "<td id='td'> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='5' checked> </td>"; #Chaque niveau d'évalutation est assigné à une note
+            echo "<td id='td'> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='10' checked> </td>";
+            echo "<td id='td'> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='15' checked> </td>";
+            echo "<td id='td'> <input type='radio' id='valeur' name=".$val['idC_Critere']." value='20' checked> </td>";
             echo "</tr>";
         }    
         echo "</table>";
@@ -346,7 +344,7 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
 		
 		#La note finale d'un entretien correspond à la moyenne des deux notes, lorsque les deux notes sont rentrées, il faut insérer dans la base de données la note finale
 		
-		$sql_note_saisie = "SELECT grille1_Resultat, grille2_Resultat FROM resultat WHERE {$_SESSION["idResult"]} = idR_Resultat";
+		$sql_note_saisie = "SELECT grille1_Resultat, grille2_Resultat FROM Resultat WHERE {$_SESSION["idResult"]} = idR_Resultat";
 		$result_note_saisie = mysqli_query($conn,$sql_note_saisie);
 		
 		while ($val = mysqli_fetch_array($result_note_saisie)) {
@@ -377,6 +375,4 @@ if ( isset ( $_POST["entretien"])){ #Si l'enseignant décide de voir les résult
  </div>
   
   </body>
-</html>  
-
-
+</html> 
