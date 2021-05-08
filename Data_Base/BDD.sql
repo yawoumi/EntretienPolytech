@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.4
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Hôte : localhost:3308
--- Généré le : jeu. 06 mai 2021 à 20:36
--- Version du serveur :  5.7.33
--- Version de PHP : 7.4.14
+-- Hôte : 127.0.0.1:3306
+-- Généré le : sam. 08 mai 2021 à 13:11
+-- Version du serveur :  5.7.31
+-- Version de PHP : 7.3.21
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,17 +18,173 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `login`
+-- Base de données : `bdd_quentin`
 --
 
 DELIMITER $$
 --
 -- Procédures
 --
-CREATE DEFINER=`login`@`%` PROCEDURE `generate_entretien` (IN `idEtu` INT)  BEGIN
+DROP PROCEDURE IF EXISTS `affectation_Horaires_Salle`$$
+CREATE DEFINER=`infotppres`@`%` PROCEDURE `affectation_Horaires_Salle` (`idDispo` INT)  BEGIN
+	/* DECLARATION DES VARIABLES*/
+    DECLARE dateDispo date;
+    DECLARE demiJDispo varchar(250);
+    
+    DECLARE heureDispo time;
+    DECLARE salleDispo varchar(250);
+    
+    /* RECUPERATION DE LA DATE ET DE LA DEMIJOURNEE */
+    SELECT dateDEns_DispoEnseignant INTO dateDispo 
+    FROM DispoEnseignant
+    WHERE idDEns_DispoEnseignant = idDispo;
+    
+    SELECT heureD_DispoEnseignant INTO demiJDispo
+    FROM DispoEnseignant
+    WHERE idDEns_DispoEnseignant = idDispo;
+    
+    /* SI MATINEE */
+	IF (demiJDispo = 'AM') THEN
+		SELECT e.idH_Horaires,e.idS_Salle
+		INTO heureDispo, salleDispo
+		FROM est_disponible e JOIN Horaires h ON e.idH_Horaires = h.idH_Horaires
+		WHERE h.dateH_Horaires = dateDispo 
+		AND e.Dispo_est_disponible = TRUE
+		AND h.heureH_Horaires BETWEEN TIME('08:30') AND TIME('12:00')
+		LIMIT 1;
+		
+		INSERT INTO se_deroule(idEnt_Entretien,idS_Salle,idH_Horaires) VALUES (idEntretien,salleDispo,heureDispo);
+
+		/* La salle (salleDispo) Ã  l'horaire (heureDispo) devient indisponible*/
+		UPDATE est_disponible
+		SET Dispo_est_disponible = FALSE
+		WHERE idH_Horaires = (SELECT idH_Horaires FROM Horaires WHERE heureH_Horaires = heureDispo)
+		AND dateH_Horaires = (SELECT dateH_Horaires FROM Horaires WHERE heureH_Horaires = heureDispo);
+	END IF;
+    
+END$$
+
+DROP PROCEDURE IF EXISTS `generate_entretien`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generate_entretien` (IN `idEtu` INT)  BEGIN
 	/* PARTIE DECLARATION DES VARIABLES */
 	DECLARE idEntretien int;
-	DECLARE boolAffectation boolean;
+	
+	DECLARE idEns1 int;
+	DECLARE idEns2 int;
+	DECLARE idDispo int;
+    DECLARE idRes int;
+	
+	DECLARE dateDispo date;
+	DECLARE demiJDispo varchar(250);
+    DECLARE horaire int;
+	DECLARE heureDispo time;
+	DECLARE salleDispo varchar(250);
+	
+	/* PARTIE AFFECTATION ENTRETIEN JURY */
+
+        /* On crÃ©e une table qui forme un Jury de 2 enseignants */
+	DROP TABLE IF EXISTS Jury;
+	CREATE TABLE Jury(idJ int AUTO_INCREMENT,
+					Enseignant1 int, 
+					Enseignant2 int, 
+					idDispo int, 
+					Affecte boolean,
+                    PRIMARY KEY (idJ));
+                    
+    /* Insertion dans la table */                
+	INSERT INTO Jury (Enseignant1,Enseignant2,idDispo,Affecte)
+	SELECT t1.idEns_Enseignant, t2.idEns_Enseignant, t1.idDEns_DispoEnseignant, FALSE
+	FROM a_des_disponibilites t1 INNER JOIN a_des_disponibilites t2
+	ON t1.idDEns_DispoEnseignant = t2.idDEns_DispoEnseignant
+	AND t1.idEns_Enseignant < t2.idEns_Enseignant
+	WHERE t1.Encore_Dispo = TRUE OR t2.Encore_Dispo = TRUE;
+    
+	/* On rÃ©cupÃ¨re les identifiants des enseignants et leur dispo */
+	SELECT j.Enseignant1,j.Enseignant2,j.idDispo
+	INTO idEns1,idEns2,idDispo
+	FROM Jury j
+	LIMIT 1;
+	/* Creation d'un resultat vide*/
+    INSERT INTO resultat VALUES ();
+    
+    /* Recupération de l'idResultat genere */
+    SELECT idR_Resultat INTO idRes 
+    FROM resultat 
+  	WHERE noteR_Resultat IS null;
+    
+    /* Affectation Ã  un entretien */
+	INSERT INTO Entretien(dureeEnt_Entretien,idR_Resultat,idEns_Enseignant1,idEns_Enseignant2,idEtu_Etudiant) VALUES (30,idRes,idEns1,idEns2,idEtu);
+	
+	/* On recupere l'id de l'entretien genere */
+	SELECT idEnt_Entretien 
+	INTO idEntretien
+	FROM Entretien 
+	WHERE idEns_Enseignant1 = idEns1 AND idEns_Enseignant2 = idEns2;
+
+        /* On l'affecte Ã  un etudiant */
+    INSERT INTO Assiste(idEtu_Etudiant,idEnt_Entretien) VALUES (idEtu,idEntretien);
+
+    UPDATE Jury SET Affecte = TRUE 
+    WHERE Enseignant1 = idEns1 AND Enseignant2 = idEns2;
+		
+/*Les deux enseignants deviennent indisponible Ã  la disponibilitÃ© selectionnee*/
+    UPDATE a_des_disponibilites SET Encore_Dispo = FALSE
+    WHERE (idEns_Enseignant = idEns1 AND idDEns_DispoEnseignant = idDispo)
+    OR (idEns_Enseignant = idEns2 AND idDEns_DispoEnseignant = idDispo);
+	
+    /* PARTIE AFFECTATION HORAIRES SALLE */
+    
+    /* RÃ©cupÃ©ration de la date et de la demi-journee */
+    SELECT dateDEns_DispoEnseignant INTO dateDispo 
+    FROM DispoEnseignant
+    WHERE idDEns_DispoEnseignant = idDispo;
+    
+    SELECT heureD_DispoEnseignant INTO demiJDispo
+    FROM DispoEnseignant
+    WHERE idDEns_DispoEnseignant = idDispo;
+    
+    /* SI MATINEE */
+	IF (demiJDispo = 'AM') THEN
+		SELECT e.idH_Horaires,e.idS_Salle
+		INTO horaire, salleDispo
+		FROM est_disponible e JOIN Horaires h ON e.idH_Horaires = h.idH_Horaires
+		WHERE h.dateH_Horaires = dateDispo 
+		AND e.Dispo_est_disponible = TRUE
+		AND h.heureH_Horaires BETWEEN TIME('08:30') AND TIME('12:00')
+		LIMIT 1;
+		
+		INSERT INTO se_deroule(idEnt_Entretien,idS_Salle,idH_Horaires) VALUES (idEntretien,salleDispo,horaire);
+
+		/* La salle (salleDispo) Ã  l'horaire (heureDispo) devient indisponible*/
+		UPDATE est_disponible
+		SET Dispo_est_disponible = FALSE
+		WHERE idH_Horaires = horaire;
+	END IF;
+    
+    /* SI APRES-MIDI */
+	IF (demiJDispo = 'PM') THEN
+		SELECT e.idH_Horaires,e.idS_Salle
+		INTO horaire, salleDispo
+		FROM est_disponible e JOIN Horaires h ON e.idH_Horaires = h.idH_Horaires
+		WHERE h.dateH_Horaires = dateDispo 
+		AND e.Dispo_est_disponible = TRUE
+		AND h.heureH_Horaires BETWEEN TIME('13:45') AND TIME('17:30')
+		LIMIT 1;
+		
+		INSERT INTO se_deroule(idEnt_Entretien,idS_Salle,idH_Horaires) VALUES (idEntretien,salleDispo,horaire);
+				
+		/* La salle (salleDispo) Ã  l'horaire (heureDispo) devient indisponible*/
+		UPDATE est_disponible
+		SET Dispo_est_disponible = FALSE
+		WHERE idH_Horaires = horaire
+        AND idS_Salle = salleDispo;
+	END IF;
+END$$
+
+DROP PROCEDURE IF EXISTS `generate_entretien_sansEtu`$$
+CREATE DEFINER=`infotppres`@`%` PROCEDURE `generate_entretien_sansEtu` (IN `idEtu` INT)  BEGIN
+	/* PARTIE DECLARATION DES VARIABLES */
+	DECLARE idEntretien int;
 	
 	DECLARE idEns1 int;
 	DECLARE idEns2 int;
@@ -36,55 +192,106 @@ CREATE DEFINER=`login`@`%` PROCEDURE `generate_entretien` (IN `idEtu` INT)  BEGI
 	
 	DECLARE dateDispo date;
 	DECLARE demiJDispo varchar(250);
+    DECLARE horaire int;
 	DECLARE heureDispo time;
 	DECLARE salleDispo varchar(250);
 	
 	/* PARTIE AFFECTATION ENTRETIEN JURY */
-	SET boolAffectation = FALSE;
+
+        /* On crÃ©e une table qui forme un Jury de 2 enseignants */
 	DROP TABLE IF EXISTS Jury;
-	CREATE TABLE Jury(idJ int AUTO_INCREMENT NOT NULL,
+	CREATE TABLE Jury(idJ int AUTO_INCREMENT,
 					Enseignant1 int, 
 					Enseignant2 int, 
 					idDispo int, 
-					Affecte boolean);
+					Affecte boolean,
+                    PRIMARY KEY (idJ));
+                    
+    /* Insertion dans la table */                
 	INSERT INTO Jury (Enseignant1,Enseignant2,idDispo,Affecte)
 	SELECT t1.idEns_Enseignant, t2.idEns_Enseignant, t1.idDEns_DispoEnseignant, FALSE
 	FROM a_des_disponibilites t1 INNER JOIN a_des_disponibilites t2
 	ON t1.idDEns_DispoEnseignant = t2.idDEns_DispoEnseignant
 	AND t1.idEns_Enseignant < t2.idEns_Enseignant
 	WHERE t1.Encore_Dispo = TRUE OR t2.Encore_Dispo = TRUE;
-	
+    
+	/* On rÃ©cupÃ¨re les identifiants des enseignants et leur dispo */
 	SELECT j.Enseignant1,j.Enseignant2,j.idDispo
 	INTO idEns1,idEns2,idDispo
 	FROM Jury j
 	LIMIT 1;
 	
-	INSERT INTO Entretien(dureeEnt_Entretien,idR_Resultat,idEns_Enseignant1,idEns_Enseignant2,idEtu_Etudiant) VALUES (30,15,idEns1,idEns2,idEtu);
+    /* Affectation Ã  un entretien */
+	INSERT INTO Entretien(dureeEnt_Entretien,idR_Resultat,idEns_Enseignant1,idEns_Enseignant2) VALUES (30,15,idEns1,idEns2);
 	
 	/* On recupere l'id de l'entretien genere */
 	SELECT idEnt_Entretien 
 	INTO idEntretien
 	FROM Entretien 
-	WHERE idEns_Enseignant1 = idEns1 AND idEns_Enseignant2 = idEns2 AND idEtu_Etudiant = idEtu;
-	
-	
-	
-	SET boolAffectation = TRUE;
-	
-	IF boolAffectation THEN
-		/*Le couple de Jury est affectee*/
-		UPDATE Jury SET Affecte = TRUE 
-		WHERE Enseignant1 = idEns1 AND Enseignant2 = idEns2;
+	WHERE idEns_Enseignant1 = idEns1 AND idEns_Enseignant2 = idEns2;
+
+        /* On l'affecte Ã  un etudiant */
+    INSERT INTO Assiste(idEtu_Etudiant,idEnt_Entretien) VALUES (idEtu,idEntretien);
+
+    UPDATE Jury SET Affecte = TRUE 
+    WHERE Enseignant1 = idEns1 AND Enseignant2 = idEns2;
 		
-		/*Les deux enseignants deviennet indisponible à la disponibilité choisi*/
-		UPDATE a_des_disponibilites SET Encore_Dispo = FALSE
-		WHERE (idEns_Enseignant = idEns1 AND idDEns_DispoEnseignant = idDispo)
-		OR (idEns_Enseignant = idEns2 AND idDEns_DispoEnseignant = idDispo);
-		SET boolAffectation = FALSE;
+/*Les deux enseignants deviennent indisponible Ã  la disponibilitÃ© selectionnee*/
+    UPDATE a_des_disponibilites SET Encore_Dispo = FALSE
+    WHERE (idEns_Enseignant = idEns1 AND idDEns_DispoEnseignant = idDispo)
+    OR (idEns_Enseignant = idEns2 AND idDEns_DispoEnseignant = idDispo);
+	
+    /* PARTIE AFFECTATION HORAIRES SALLE */
+    
+    /* RÃ©cupÃ©ration de la date et de la demi-journee */
+    SELECT dateDEns_DispoEnseignant INTO dateDispo 
+    FROM DispoEnseignant
+    WHERE idDEns_DispoEnseignant = idDispo;
+    
+    SELECT heureD_DispoEnseignant INTO demiJDispo
+    FROM DispoEnseignant
+    WHERE idDEns_DispoEnseignant = idDispo;
+    
+    /* SI MATINEE */
+	IF (demiJDispo = 'AM') THEN
+		SELECT e.idH_Horaires,e.idS_Salle
+		INTO horaire, salleDispo
+		FROM est_disponible e JOIN Horaires h ON e.idH_Horaires = h.idH_Horaires
+		WHERE h.dateH_Horaires = dateDispo 
+		AND e.Dispo_est_disponible = TRUE
+		AND h.heureH_Horaires BETWEEN TIME('08:30') AND TIME('12:00')
+		LIMIT 1;
+		
+		INSERT INTO se_deroule(idEnt_Entretien,idS_Salle,idH_Horaires) VALUES (idEntretien,salleDispo,horaire);
+
+		/* La salle (salleDispo) Ã  l'horaire (heureDispo) devient indisponible*/
+		UPDATE est_disponible
+		SET Dispo_est_disponible = FALSE
+		WHERE idH_Horaires = horaire;
+	END IF;
+    
+    /* SI APRES-MIDI */
+	IF (demiJDispo = 'PM') THEN
+		SELECT e.idH_Horaires,e.idS_Salle
+		INTO horaire, salleDispo
+		FROM est_disponible e JOIN Horaires h ON e.idH_Horaires = h.idH_Horaires
+		WHERE h.dateH_Horaires = dateDispo 
+		AND e.Dispo_est_disponible = TRUE
+		AND h.heureH_Horaires BETWEEN TIME('13:45') AND TIME('17:30')
+		LIMIT 1;
+		
+		INSERT INTO se_deroule(idEnt_Entretien,idS_Salle,idH_Horaires) VALUES (idEntretien,salleDispo,horaire);
+				
+		/* La salle (salleDispo) Ã  l'horaire (heureDispo) devient indisponible*/
+		UPDATE est_disponible
+		SET Dispo_est_disponible = FALSE
+		WHERE idH_Horaires = horaire
+        AND idS_Salle = salleDispo;
 	END IF;
 END$$
 
-CREATE DEFINER=`login`@`%` PROCEDURE `insertion_DispoEnseignant` ()  begin
+DROP PROCEDURE IF EXISTS `insertion_DispoEnseignant`$$
+CREATE DEFINER=`infotppres`@`%` PROCEDURE `insertion_DispoEnseignant` ()  begin
 	CREATE VIEW DatetoDispo AS
 	SELECT DISTINCT dateH_Horaires FROM Horaires;
 
@@ -101,13 +308,15 @@ CREATE DEFINER=`login`@`%` PROCEDURE `insertion_DispoEnseignant` ()  begin
 	DROP TABLE DemiJournee;
 end$$
 
-CREATE DEFINER=`login`@`%` PROCEDURE `insertion_estDispo` ()  begin
+DROP PROCEDURE IF EXISTS `insertion_estDispo`$$
+CREATE DEFINER=`infotppres`@`%` PROCEDURE `insertion_estDispo` ()  begin
 	INSERT INTO est_disponible(idH_Horaires,idS_Salle,Dispo_est_disponible)
 	SELECT h.idH_Horaires, s.idS_Salle, TRUE FROM Horaires h, Salle s;
 end$$
 
-CREATE DEFINER=`login`@`%` PROCEDURE `insertion_Horaires` (IN `heureDebut` TIME, IN `dateDebut` DATE, IN `nb` INT)  begin
-	/*Déclaration des variables*/
+DROP PROCEDURE IF EXISTS `insertion_Horaires`$$
+CREATE DEFINER=`infotppres`@`%` PROCEDURE `insertion_Horaires` (IN `heureDebut` TIME, IN `dateDebut` DATE, IN `nb` INT)  begin
+	/*DÃ©claration des variables*/
 	DECLARE intervalle time;
 	DECLARE heure time;
     DECLARE heureFin time;
@@ -120,13 +329,13 @@ CREATE DEFINER=`login`@`%` PROCEDURE `insertion_Horaires` (IN `heureDebut` TIME,
     
 
     SET heure = heureDebut;
-	IF dateDebut <= (dateDebut + nb) THEN /*Tant que le nombre de jours à implementer n'est pas atteint*/
-		WHILE TIME_TO_SEC(TIMEDIFF(heureFin,heure))>=0 DO /*Tant qu'on a pas dépassé l'heure de fin des entretiens*/
+	IF dateDebut <= (dateDebut + nb) THEN /*Tant que le nombre de jours Ã  implementer n'est pas atteint*/
+		WHILE TIME_TO_SEC(TIMEDIFF(heureFin,heure))>=0 DO /*Tant qu'on a pas dÃ©passÃ© l'heure de fin des entretiens*/
 				INSERT INTO Horaires(dateH_Horaires,heureH_Horaires) VALUES (dateDebut,heure); /*Insertion des dates et horaires possibles*/
-				SELECT ADDTIME(heure, intervalle) INTO heure; /*On incrémente l'heure possible suivante*/        	
+				SELECT ADDTIME(heure, intervalle) INTO heure; /*On incrÃ©mente l'heure possible suivante*/        	
 				IF TIME_TO_SEC(TIMEDIFF(heureFin,heure))<0 THEN /*Si l'heure de fin est atteint*/
-                    set dateDebut = dateDebut + 1; /*On incrémente les jours*/
-                    set heure = heureDebut; /*On réinitialise l'heure de début*/ 
+                    set dateDebut = dateDebut + 1; /*On incrÃ©mente les jours*/
+                    set heure = heureDebut; /*On rÃ©initialise l'heure de dÃ©but*/ 
 				END IF;
 		END WHILE;
 	END IF;
@@ -138,13 +347,22 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Assiste`
+-- Structure de la table `assiste`
 --
 
-CREATE TABLE `Assiste` (
-  `idEtu_Etudiant` int(11) NOT NULL,
-  `idEnt_Entretien` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `assiste`;
+CREATE TABLE IF NOT EXISTS `assiste` (
+  `idEtu_Etudiant` int(11) NOT NULL AUTO_INCREMENT,
+  `idEnt_Entretien` int(11) NOT NULL,
+  PRIMARY KEY (`idEtu_Etudiant`,`idEnt_Entretien`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `assiste`
+--
+
+INSERT INTO `assiste` (`idEtu_Etudiant`, `idEnt_Entretien`) VALUES
+(2, 1);
 
 -- --------------------------------------------------------
 
@@ -152,10 +370,12 @@ CREATE TABLE `Assiste` (
 -- Structure de la table `a_des_disponibilites`
 --
 
-CREATE TABLE `a_des_disponibilites` (
+DROP TABLE IF EXISTS `a_des_disponibilites`;
+CREATE TABLE IF NOT EXISTS `a_des_disponibilites` (
   `idEns_Enseignant` int(11) NOT NULL,
   `idDEns_DispoEnseignant` int(11) NOT NULL,
-  `Encore_Dispo` tinyint(1) NOT NULL
+  `Encore_Dispo` tinyint(1) NOT NULL,
+  PRIMARY KEY (`idEns_Enseignant`,`idDEns_DispoEnseignant`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -164,69 +384,76 @@ CREATE TABLE `a_des_disponibilites` (
 
 INSERT INTO `a_des_disponibilites` (`idEns_Enseignant`, `idDEns_DispoEnseignant`, `Encore_Dispo`) VALUES
 (1, 1, 1),
-(1, 2, 1),
-(1, 3, 1),
+(1, 2, 0),
+(1, 3, 0),
 (1, 4, 1),
 (1, 5, 1),
 (1, 6, 1),
 (1, 7, 1),
 (1, 8, 1),
-(2, 2, 1),
+(1, 14, 1),
+(1, 22, 1),
+(2, 2, 0),
 (2, 6, 1),
 (2, 7, 1),
 (2, 8, 1),
-(3, 3, 1),
+(3, 3, 0),
 (3, 5, 1),
 (3, 6, 1);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Critere`
+-- Structure de la table `critere`
 --
 
-CREATE TABLE `Critere` (
-  `idC_Critere` int(11) NOT NULL,
-  `descriptionC_Critere` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `critere`;
+CREATE TABLE IF NOT EXISTS `critere` (
+  `idC_Critere` int(11) NOT NULL AUTO_INCREMENT,
+  `descriptionC_Critere` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`idC_Critere`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 --
--- Déchargement des données de la table `Critere`
+-- Déchargement des données de la table `critere`
 --
 
-INSERT INTO `Critere` (`idC_Critere`, `descriptionC_Critere`) VALUES
-(1, 'contenu de l expose'),
-(2, 'qualité des support'),
-(3, 'qualité de l expression'),
+INSERT INTO `critere` (`idC_Critere`, `descriptionC_Critere`) VALUES
+(1, 'contenu de l\'exposé'),
+(2, 'qualité des supports'),
+(3, 'qualité de l\'expression'),
 (4, 'reponse aux questions');
 
 -- --------------------------------------------------------
 
 --
--- Doublure de structure pour la vue `DatetoDispo`
+-- Doublure de structure pour la vue `datetodispo`
 -- (Voir ci-dessous la vue réelle)
 --
-CREATE TABLE `DatetoDispo` (
+DROP VIEW IF EXISTS `datetodispo`;
+CREATE TABLE IF NOT EXISTS `datetodispo` (
 `dateH_Horaires` date
 );
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `DispoEnseignant`
+-- Structure de la table `dispoenseignant`
 --
 
-CREATE TABLE `DispoEnseignant` (
-  `idDEns_DispoEnseignant` int(11) NOT NULL,
+DROP TABLE IF EXISTS `dispoenseignant`;
+CREATE TABLE IF NOT EXISTS `dispoenseignant` (
+  `idDEns_DispoEnseignant` int(11) NOT NULL AUTO_INCREMENT,
   `dateDEns_DispoEnseignant` date DEFAULT NULL,
-  `heureD_DispoEnseignant` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `heureD_DispoEnseignant` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`idDEns_DispoEnseignant`)
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
 
 --
--- Déchargement des données de la table `DispoEnseignant`
+-- Déchargement des données de la table `dispoenseignant`
 --
 
-INSERT INTO `DispoEnseignant` (`idDEns_DispoEnseignant`, `dateDEns_DispoEnseignant`, `heureD_DispoEnseignant`) VALUES
+INSERT INTO `dispoenseignant` (`idDEns_DispoEnseignant`, `dateDEns_DispoEnseignant`, `heureD_DispoEnseignant`) VALUES
 (1, '2021-04-17', 'AM'),
 (2, '2021-04-17', 'PM'),
 (3, '2021-04-18', 'AM'),
@@ -259,20 +486,22 @@ INSERT INTO `DispoEnseignant` (`idDEns_DispoEnseignant`, `dateDEns_DispoEnseigna
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Enseignant`
+-- Structure de la table `enseignant`
 --
 
-CREATE TABLE `Enseignant` (
-  `idEns_Enseignant` int(11) NOT NULL,
+DROP TABLE IF EXISTS `enseignant`;
+CREATE TABLE IF NOT EXISTS `enseignant` (
+  `idEns_Enseignant` int(11) NOT NULL AUTO_INCREMENT,
   `nomEns_Enseignant` varchar(250) DEFAULT NULL,
-  `prenomEns_Enseignant` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `prenomEns_Enseignant` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`idEns_Enseignant`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 --
--- Déchargement des données de la table `Enseignant`
+-- Déchargement des données de la table `enseignant`
 --
 
-INSERT INTO `Enseignant` (`idEns_Enseignant`, `nomEns_Enseignant`, `prenomEns_Enseignant`) VALUES
+INSERT INTO `enseignant` (`idEns_Enseignant`, `nomEns_Enseignant`, `prenomEns_Enseignant`) VALUES
 (1, 'Vernier', 'Flavien'),
 (2, 'Yvenat', 'Muriel'),
 (3, 'Marteau', 'Stéphane'),
@@ -286,17 +515,26 @@ INSERT INTO `Enseignant` (`idEns_Enseignant`, `nomEns_Enseignant`, `prenomEns_En
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Entretien`
+-- Structure de la table `entretien`
 --
 
-CREATE TABLE `Entretien` (
-  `idEnt_Entretien` int(11) NOT NULL,
+DROP TABLE IF EXISTS `entretien`;
+CREATE TABLE IF NOT EXISTS `entretien` (
+  `idEnt_Entretien` int(11) NOT NULL AUTO_INCREMENT,
   `dureeEnt_Entretien` int(11) DEFAULT '30',
-  `idR_Resultat` float DEFAULT NULL,
+  `idR_Resultat` int(11) DEFAULT NULL,
   `idEns_Enseignant1` int(11) DEFAULT NULL,
   `idEns_Enseignant2` int(11) DEFAULT NULL,
-  `idEtu_Etudiant` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `idEtu_Etudiant` int(11) NOT NULL,
+  PRIMARY KEY (`idEnt_Entretien`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `entretien`
+--
+
+INSERT INTO `entretien` (`idEnt_Entretien`, `dureeEnt_Entretien`, `idR_Resultat`, `idEns_Enseignant1`, `idEns_Enseignant2`, `idEtu_Etudiant`) VALUES
+(1, 30, 1, 1, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -304,10 +542,12 @@ CREATE TABLE `Entretien` (
 -- Structure de la table `est_disponible`
 --
 
-CREATE TABLE `est_disponible` (
+DROP TABLE IF EXISTS `est_disponible`;
+CREATE TABLE IF NOT EXISTS `est_disponible` (
   `idH_Horaires` int(11) NOT NULL,
   `idS_Salle` int(11) NOT NULL,
-  `Dispo_est_disponible` tinyint(1) DEFAULT NULL
+  `Dispo_est_disponible` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`idH_Horaires`,`idS_Salle`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -455,7 +695,7 @@ INSERT INTO `est_disponible` (`idH_Horaires`, `idS_Salle`, `Dispo_est_disponible
 (7, 18, 1),
 (7, 19, 1),
 (7, 20, 1),
-(8, 1, 1),
+(8, 1, 0),
 (8, 2, 1),
 (8, 3, 1),
 (8, 4, 1),
@@ -575,26 +815,26 @@ INSERT INTO `est_disponible` (`idH_Horaires`, `idS_Salle`, `Dispo_est_disponible
 (13, 18, 1),
 (13, 19, 1),
 (13, 20, 1),
-(14, 1, 1),
-(14, 2, 1),
-(14, 3, 1),
-(14, 4, 1),
-(14, 5, 1),
-(14, 6, 1),
-(14, 7, 1),
-(14, 8, 1),
-(14, 9, 1),
-(14, 10, 1),
-(14, 11, 1),
-(14, 12, 1),
-(14, 13, 1),
-(14, 14, 1),
-(14, 15, 1),
-(14, 16, 1),
-(14, 17, 1),
-(14, 18, 1),
-(14, 19, 1),
-(14, 20, 1),
+(14, 1, 0),
+(14, 2, 0),
+(14, 3, 0),
+(14, 4, 0),
+(14, 5, 0),
+(14, 6, 0),
+(14, 7, 0),
+(14, 8, 0),
+(14, 9, 0),
+(14, 10, 0),
+(14, 11, 0),
+(14, 12, 0),
+(14, 13, 0),
+(14, 14, 0),
+(14, 15, 0),
+(14, 16, 0),
+(14, 17, 0),
+(14, 18, 0),
+(14, 19, 0),
+(14, 20, 0),
 (15, 1, 1),
 (15, 2, 1),
 (15, 3, 1),
@@ -3959,20 +4199,22 @@ INSERT INTO `est_disponible` (`idH_Horaires`, `idS_Salle`, `Dispo_est_disponible
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Etudiant`
+-- Structure de la table `etudiant`
 --
 
-CREATE TABLE `Etudiant` (
-  `idEtu_Etudiant` int(11) NOT NULL,
+DROP TABLE IF EXISTS `etudiant`;
+CREATE TABLE IF NOT EXISTS `etudiant` (
+  `idEtu_Etudiant` int(11) NOT NULL AUTO_INCREMENT,
   `nomEtu_Etudiant` varchar(250) DEFAULT NULL,
-  `prenomEtu_Etudiant` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `prenomEtu_Etudiant` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`idEtu_Etudiant`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 
 --
--- Déchargement des données de la table `Etudiant`
+-- Déchargement des données de la table `etudiant`
 --
 
-INSERT INTO `Etudiant` (`idEtu_Etudiant`, `nomEtu_Etudiant`, `prenomEtu_Etudiant`) VALUES
+INSERT INTO `etudiant` (`idEtu_Etudiant`, `nomEtu_Etudiant`, `prenomEtu_Etudiant`) VALUES
 (1, 'Theze', 'Doriane'),
 (2, 'Yao', 'Xin'),
 (3, 'Drouin', 'Lola'),
@@ -3987,20 +4229,22 @@ INSERT INTO `Etudiant` (`idEtu_Etudiant`, `nomEtu_Etudiant`, `prenomEtu_Etudiant
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Horaires`
+-- Structure de la table `horaires`
 --
 
-CREATE TABLE `Horaires` (
-  `idH_Horaires` int(11) NOT NULL,
+DROP TABLE IF EXISTS `horaires`;
+CREATE TABLE IF NOT EXISTS `horaires` (
+  `idH_Horaires` int(11) NOT NULL AUTO_INCREMENT,
   `dateH_Horaires` date DEFAULT NULL,
-  `heureH_Horaires` time DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `heureH_Horaires` time DEFAULT NULL,
+  PRIMARY KEY (`idH_Horaires`)
+) ENGINE=InnoDB AUTO_INCREMENT=183 DEFAULT CHARSET=latin1;
 
 --
--- Déchargement des données de la table `Horaires`
+-- Déchargement des données de la table `horaires`
 --
 
-INSERT INTO `Horaires` (`idH_Horaires`, `dateH_Horaires`, `heureH_Horaires`) VALUES
+INSERT INTO `horaires` (`idH_Horaires`, `dateH_Horaires`, `heureH_Horaires`) VALUES
 (1, '2021-04-17', '08:30:00'),
 (2, '2021-04-17', '09:15:00'),
 (3, '2021-04-17', '10:00:00'),
@@ -4187,67 +4431,115 @@ INSERT INTO `Horaires` (`idH_Horaires`, `dateH_Horaires`, `heureH_Horaires`) VAL
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Passe`
+-- Structure de la table `jury`
 --
 
-CREATE TABLE `Passe` (
-  `idT_Type_Session` int(11) NOT NULL,
-  `idEtu_Etudiant` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `jury`;
+CREATE TABLE IF NOT EXISTS `jury` (
+  `idJ` int(11) NOT NULL AUTO_INCREMENT,
+  `Enseignant1` int(11) DEFAULT NULL,
+  `Enseignant2` int(11) DEFAULT NULL,
+  `idDispo` int(11) DEFAULT NULL,
+  `Affecte` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`idJ`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `jury`
+--
+
+INSERT INTO `jury` (`idJ`, `Enseignant1`, `Enseignant2`, `idDispo`, `Affecte`) VALUES
+(1, 1, 3, 5, 0),
+(2, 1, 2, 6, 0),
+(3, 1, 3, 6, 0),
+(4, 1, 2, 7, 0),
+(5, 1, 2, 8, 0),
+(6, 2, 3, 6, 0);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Possede`
+-- Structure de la table `passe`
 --
 
-CREATE TABLE `Possede` (
+DROP TABLE IF EXISTS `passe`;
+CREATE TABLE IF NOT EXISTS `passe` (
   `idT_Type_Session` int(11) NOT NULL,
-  `idC_Critere` int(11) NOT NULL
+  `idEtu_Etudiant` int(11) NOT NULL,
+  PRIMARY KEY (`idT_Type_Session`,`idEtu_Etudiant`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Déchargement des données de la table `Possede`
+-- Déchargement des données de la table `passe`
 --
 
-INSERT INTO `Possede` (`idT_Type_Session`, `idC_Critere`) VALUES
+INSERT INTO `passe` (`idT_Type_Session`, `idEtu_Etudiant`) VALUES
+(1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `possede`
+--
+
+DROP TABLE IF EXISTS `possede`;
+CREATE TABLE IF NOT EXISTS `possede` (
+  `idT_Type_Session` int(11) NOT NULL AUTO_INCREMENT,
+  `idC_Critere` int(11) NOT NULL,
+  PRIMARY KEY (`idT_Type_Session`,`idC_Critere`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `possede`
+--
+
+INSERT INTO `possede` (`idT_Type_Session`, `idC_Critere`) VALUES
 (1, 1),
 (1, 2),
 (1, 3),
-(1, 4),
-(2, 1),
-(2, 2);
+(1, 4);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Resultat`
+-- Structure de la table `resultat`
 --
 
-CREATE TABLE `Resultat` (
-  `idR_Resultat` int(11) NOT NULL,
+DROP TABLE IF EXISTS `resultat`;
+CREATE TABLE IF NOT EXISTS `resultat` (
+  `idR_Resultat` int(11) NOT NULL AUTO_INCREMENT,
   `noteR_Resultat` float DEFAULT NULL,
   `grille1_Resultat` float DEFAULT NULL,
   `grille2_Resultat` float DEFAULT NULL,
-  `entretien_ident_entretien` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `entretien_ident_entretien` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idR_Resultat`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `resultat`
+--
+
+INSERT INTO `resultat` (`idR_Resultat`, `noteR_Resultat`, `grille1_Resultat`, `grille2_Resultat`, `entretien_ident_entretien`) VALUES
+(1, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Salle`
+-- Structure de la table `salle`
 --
 
-CREATE TABLE `Salle` (
-  `idS_Salle` int(11) NOT NULL,
-  `nomS_Salle` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `salle`;
+CREATE TABLE IF NOT EXISTS `salle` (
+  `idS_Salle` int(11) NOT NULL AUTO_INCREMENT,
+  `nomS_Salle` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`idS_Salle`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
 --
--- Déchargement des données de la table `Salle`
+-- Déchargement des données de la table `salle`
 --
 
-INSERT INTO `Salle` (`idS_Salle`, `nomS_Salle`) VALUES
+INSERT INTO `salle` (`idS_Salle`, `nomS_Salle`) VALUES
 (1, 'C110'),
 (2, 'C111'),
 (3, 'C112'),
@@ -4275,30 +4567,41 @@ INSERT INTO `Salle` (`idS_Salle`, `nomS_Salle`) VALUES
 -- Structure de la table `se_deroule`
 --
 
-CREATE TABLE `se_deroule` (
-  `idEnt_Entretien` int(11) NOT NULL,
+DROP TABLE IF EXISTS `se_deroule`;
+CREATE TABLE IF NOT EXISTS `se_deroule` (
+  `idEnt_Entretien` int(11) NOT NULL AUTO_INCREMENT,
   `idS_Salle` int(11) NOT NULL,
-  `idH_Horaires` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `idH_Horaires` int(11) NOT NULL,
+  PRIMARY KEY (`idEnt_Entretien`,`idS_Salle`,`idH_Horaires`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `se_deroule`
+--
+
+INSERT INTO `se_deroule` (`idEnt_Entretien`, `idS_Salle`, `idH_Horaires`) VALUES
+(1, 1, 14);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Type_Session`
+-- Structure de la table `type_session`
 --
 
-CREATE TABLE `Type_Session` (
-  `idT_Type_Session` int(11) NOT NULL,
-  `descriptionT_Type_Session` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `type_session`;
+CREATE TABLE IF NOT EXISTS `type_session` (
+  `idT_Type_Session` int(11) NOT NULL AUTO_INCREMENT,
+  `descriptionT_Type_Session` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`idT_Type_Session`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 --
--- Déchargement des données de la table `Type_Session`
+-- Déchargement des données de la table `type_session`
 --
 
-INSERT INTO `Type_Session` (`idT_Type_Session`, `descriptionT_Type_Session`) VALUES
+INSERT INTO `type_session` (`idT_Type_Session`, `descriptionT_Type_Session`) VALUES
 (1, 'recrutements PEIP'),
-(2, 'recrutements filière ingé'),
+(2, 'recrutements filière ingénieur'),
 (3, 'APP'),
 (4, 'stage FI3'),
 (5, 'stage FI4'),
@@ -4309,210 +4612,12 @@ INSERT INTO `Type_Session` (`idT_Type_Session`, `descriptionT_Type_Session`) VAL
 -- --------------------------------------------------------
 
 --
--- Structure de la vue `DatetoDispo`
+-- Structure de la vue `datetodispo`
 --
-DROP TABLE IF EXISTS `DatetoDispo`;
+DROP TABLE IF EXISTS `datetodispo`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`hassayaw`@`%` SQL SECURITY DEFINER VIEW `DatetoDispo`  AS SELECT DISTINCT `Horaires`.`dateH_Horaires` AS `dateH_Horaires` FROM `Horaires` ;
-
---
--- Index pour les tables déchargées
---
-
---
--- Index pour la table `Assiste`
---
-ALTER TABLE `Assiste`
-  ADD PRIMARY KEY (`idEtu_Etudiant`,`idEnt_Entretien`);
-
---
--- Index pour la table `a_des_disponibilites`
---
-ALTER TABLE `a_des_disponibilites`
-  ADD PRIMARY KEY (`idEns_Enseignant`,`idDEns_DispoEnseignant`);
-
---
--- Index pour la table `Critere`
---
-ALTER TABLE `Critere`
-  ADD PRIMARY KEY (`idC_Critere`);
-
---
--- Index pour la table `DispoEnseignant`
---
-ALTER TABLE `DispoEnseignant`
-  ADD PRIMARY KEY (`idDEns_DispoEnseignant`);
-
---
--- Index pour la table `Enseignant`
---
-ALTER TABLE `Enseignant`
-  ADD PRIMARY KEY (`idEns_Enseignant`);
-
---
--- Index pour la table `Entretien`
---
-ALTER TABLE `Entretien`
-  ADD PRIMARY KEY (`idEnt_Entretien`),
-  ADD KEY `FK_Entretien_idEtu_Etudiant` (`idEtu_Etudiant`);
-
---
--- Index pour la table `est_disponible`
---
-ALTER TABLE `est_disponible`
-  ADD PRIMARY KEY (`idH_Horaires`,`idS_Salle`);
-
---
--- Index pour la table `Etudiant`
---
-ALTER TABLE `Etudiant`
-  ADD PRIMARY KEY (`idEtu_Etudiant`);
-
---
--- Index pour la table `Horaires`
---
-ALTER TABLE `Horaires`
-  ADD PRIMARY KEY (`idH_Horaires`);
-
---
--- Index pour la table `Passe`
---
-ALTER TABLE `Passe`
-  ADD PRIMARY KEY (`idT_Type_Session`,`idEtu_Etudiant`);
-
---
--- Index pour la table `Possede`
---
-ALTER TABLE `Possede`
-  ADD PRIMARY KEY (`idT_Type_Session`,`idC_Critere`);
-
---
--- Index pour la table `Resultat`
---
-ALTER TABLE `Resultat`
-  ADD PRIMARY KEY (`idR_Resultat`);
-
---
--- Index pour la table `Salle`
---
-ALTER TABLE `Salle`
-  ADD PRIMARY KEY (`idS_Salle`);
-
---
--- Index pour la table `se_deroule`
---
-ALTER TABLE `se_deroule`
-  ADD PRIMARY KEY (`idEnt_Entretien`,`idS_Salle`,`idH_Horaires`);
-
---
--- Index pour la table `Type_Session`
---
-ALTER TABLE `Type_Session`
-  ADD PRIMARY KEY (`idT_Type_Session`);
-
---
--- AUTO_INCREMENT pour les tables déchargées
---
-
---
--- AUTO_INCREMENT pour la table `Assiste`
---
-ALTER TABLE `Assiste`
-  MODIFY `idEtu_Etudiant` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `a_des_disponibilites`
---
-ALTER TABLE `a_des_disponibilites`
-  MODIFY `idEns_Enseignant` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT pour la table `Critere`
---
-ALTER TABLE `Critere`
-  MODIFY `idC_Critere` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT pour la table `DispoEnseignant`
---
-ALTER TABLE `DispoEnseignant`
-  MODIFY `idDEns_DispoEnseignant` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
-
---
--- AUTO_INCREMENT pour la table `Enseignant`
---
-ALTER TABLE `Enseignant`
-  MODIFY `idEns_Enseignant` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- AUTO_INCREMENT pour la table `Entretien`
---
-ALTER TABLE `Entretien`
-  MODIFY `idEnt_Entretien` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `est_disponible`
---
-ALTER TABLE `est_disponible`
-  MODIFY `idH_Horaires` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=183;
-
---
--- AUTO_INCREMENT pour la table `Etudiant`
---
-ALTER TABLE `Etudiant`
-  MODIFY `idEtu_Etudiant` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT pour la table `Horaires`
---
-ALTER TABLE `Horaires`
-  MODIFY `idH_Horaires` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=183;
-
---
--- AUTO_INCREMENT pour la table `Passe`
---
-ALTER TABLE `Passe`
-  MODIFY `idT_Type_Session` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `Possede`
---
-ALTER TABLE `Possede`
-  MODIFY `idT_Type_Session` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT pour la table `Resultat`
---
-ALTER TABLE `Resultat`
-  MODIFY `idR_Resultat` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `Salle`
---
-ALTER TABLE `Salle`
-  MODIFY `idS_Salle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-
---
--- AUTO_INCREMENT pour la table `se_deroule`
---
-ALTER TABLE `se_deroule`
-  MODIFY `idEnt_Entretien` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `Type_Session`
---
-ALTER TABLE `Type_Session`
-  MODIFY `idT_Type_Session` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- Contraintes pour les tables déchargées
---
-
---
--- Contraintes pour la table `Entretien`
---
-ALTER TABLE `Entretien`
-  ADD CONSTRAINT `FK_Entretien_idEtu_Etudiant` FOREIGN KEY (`idEtu_Etudiant`) REFERENCES `Etudiant` (`idEtu_Etudiant`);
+DROP VIEW IF EXISTS `datetodispo`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`infotppres`@`%` SQL SECURITY DEFINER VIEW `datetodispo`  AS  select distinct `horaires`.`dateH_Horaires` AS `dateH_Horaires` from `horaires` ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
