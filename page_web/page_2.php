@@ -12,7 +12,7 @@
   <?php
  
      /*Connexion à la base de données sur le serveur tp-epua*/
-		$conn = @mysqli_connect("tp-epua:3308", "login", "mdp");    
+		$conn = @mysqli_connect("localhost", "root", "", "infotppres2");    
 		
 		/*connexion à la base de donnée depuis la machine virtuelle INFO642*/
 		/*$conn = @mysqli_connect("localhost", "login", "mdp");*/  
@@ -92,7 +92,6 @@
 			JOIN Entretien as ent ON ent.idEtu_Etudiant=etu.idEtu_Etudiant
 			JOIN Resultat as res ON res.idR_Resultat=ent.idR_Resultat ;";
 		    
-		
 		    $result2 = mysqli_query($conn, $sql2);
 		   
 			echo "<div>Vous avez obtenu la note de : </div>";
@@ -117,18 +116,12 @@
        <input type="password" name="pw" placeholder="Mot de passe">
        <input type="submit" name="button1" value="Se connecter">
 	   
-	   <div class="signup-link" style="color:black;"> Vous n'êtes pas un membre ?<a href="index2.php" style="color:#3498db;">Inscrivez-vous</a</div>
+	   <div class="signup-link" style="color:black;"> Vous n'êtes pas un membre ? <a href="index2.php" style="color:#3498db;">Inscrivez-vous</a</div>
 	  
 	   
 		
 	   
   </form>
-  
-  
-  
- 
-  
-  
-    
+
   </body>
 </html>

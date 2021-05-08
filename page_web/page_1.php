@@ -9,8 +9,8 @@
  
 <body> 
 <?php
-$conn = @mysqli_connect("tp-epua:3308", "login", "mdp") or die ("Impossible de se connecter: ".mysqli_connect_error());
-mysqli_select_db($conn, "login") or die("Impossible de sélectionner la base: ".mysqli_connect_error());
+$conn = @mysqli_connect("localhost", "root", "", "infotppres2") or die ("Impossible de se connecter: ".mysqli_connect_error());
+mysqli_select_db($conn, "infotppres2") or die("Impossible de sélectionner la base: ".mysqli_connect_error());
 mysqli_query($conn, "SET NAMES UTF8");
 ?>
   <!--Entrer les disponibilités une à une-->
@@ -42,14 +42,17 @@ mysqli_query($conn, "SET NAMES UTF8");
 	$result3 = mysqli_query($conn, $sql3);
 	$row3 = mysqli_fetch_assoc($result3);
 	$sql2= "INSERT INTO a_des_disponibilites
-			values (convert('".$row3['idEns_Enseignant']."', UNSIGNED),convert('".$dispoE."', UNSIGNED));";
+			values ({$row3['idEns_Enseignant']},{$dispoE},1);";
+			
+#values (convert('".$row3['idEns_Enseignant']."', UNSIGNED),convert('".$dispoE."', UNSIGNED));";
+
 	$result2 = mysqli_query($conn, $sql2);
 	echo "Horaire enregistré.";
 	}
   ?>
   <h2>Mes horaires</h2>
   <form action="page_accueil.php?page=1" method="post">
-	<p>Veuillez entre votre nom et prénom:</p>
+	<p>Veuillez entrer votre nom et prénom:</p>
 	Nom: <input type="text" name="nom"><br>
 	Prénom: <input type="text" name="prenom"><br>
 	

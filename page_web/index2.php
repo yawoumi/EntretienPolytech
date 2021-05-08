@@ -59,7 +59,7 @@
 			<?php
  
  /*Connexion à la base de données sur le serveur tp-epua*/
-	$conn = @mysqli_connect("tp-epua:3308", "login", "mdp");    
+	$conn = @mysqli_connect("localhost", "root", "", "infotppres2");    
 	
 	/*connexion à la base de donnée depuis la machine virtuelle INFO642*/
 	/*$conn = @mysqli_connect("localhost", "login", "mdp");*/  
@@ -123,7 +123,7 @@ if (isset($_POST["button"])){
 	
   
     	<div class="pied">
-      		<p>Polytech Annecy-Chambéry - IGI642 BTDW - Projet Entretient</p></br>
+      		<p>Polytech Annecy-Chambéry - IGI642 BTDW - Projet Entretient</p>
 	  		<span style="color:gris ;font-size:20px" >Notre équipe: Bourabi Kaoutar, Drouin Lola, Hassani Yawoumihani, Pascal Quentin, Randriamahefa Nomentsoa, Theze Doriane, Yao Xin</span>
     	</div>
  </div>

@@ -25,8 +25,8 @@
   <ul style="font-size:18px;">
   <li>Les entretiens de recrutements (PEIP ou filière ingénieurs)</li>
   <li>Les évaluations de compétences des étudiants dans le cadre des APP</li>
-  <li>Les évaluation de projets (projet usage, recherche & développement, ...)</li>
-  <li>Les évaluation de stages (stage ingénieur, ...)</li>
+  <li>Les évaluations de projets (projet usage, recherche & développement, ...)</li>
+  <li>Les évaluations de stages (stage ingénieur, ...)</li>
   </ul>  
   <p>Ces sessions d'entretiens mobilisent à chaque fois plusieurs ressources :</p>
   <ul style="font-size:18px;">
@@ -38,8 +38,8 @@
 <p>Après chaque entretien, chaque membre du jury réalise individuellement une évaluation qu'il saisit dans une grille composée de critères. L'expression des critères ainsi que  leur niveau d’évaluation peut différer selon les types de session.</p><br>  
 <div class="imag">
   
-  <img  style="height:310px"  src="Woofy.jpg" > 
-  <img  style="height:310px"  src="reu1.jpg" > 	
+  <img  style="height:310px"  src="http://localhost/EntretienPolytech/Data/Woofy.jpg" > 
+  <img  style="height:310px"  src="http://localhost/EntretienPolytech/Data/reu1.jpg" > 	
 </div>
 
   </body>
