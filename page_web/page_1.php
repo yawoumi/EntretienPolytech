@@ -9,8 +9,8 @@
  
 <body> 
 <?php
-$conn = @mysqli_connect("localhost", "root", "", "infotppres2") or die ("Impossible de se connecter: ".mysqli_connect_error());
-mysqli_select_db($conn, "infotppres2") or die("Impossible de sélectionner la base: ".mysqli_connect_error());
+$conn = @mysqli_connect("tp-epua:3308", "login", "mdp") or die ("Impossible de se connecter: ".mysqli_connect_error());
+mysqli_select_db($conn, "login") or die("Impossible de sélectionner la base: ".mysqli_connect_error());
 mysqli_query($conn, "SET NAMES UTF8");
 ?>
   <!--Entrer les disponibilités une à une-->
@@ -98,35 +98,21 @@ mysqli_query($conn, "SET NAMES UTF8");
 		echo "Veuillez vous identifier";
 	}
   else{
-	$sql = "SELECT  dateH_Horaires, heureH_Horaires, nomS_Salle, descriptionT_Type_Session, nomEtu_Etudiant, prenomEtu_Etudiant 
-	FROM (SELECT idEns_Enseignant FROM Enseignant WHERE nomEns_Enseignant='".$nom."' AND prenomEns_Enseignant='".$prenom."') AS prof
-	JOIN Entretien as ent ON prof.idEns_Enseignant=ent.idEns_Enseignant1
-	JOIN Etudiant AS etu ON ent.idEtu_Etudiant=etu.idEtu_Etudiant 
-	JOIN Passe AS p ON etu.idEtu_Etudiant=p.idEtu_Etudiant 
-	JOIN Type_Session AS ts ON p.idT_Type_Session=ts.idT_Type_Session 
-	JOIN se_deroule as der ON ent.idEnt_Entretien=der.idEnt_Entretien
-	JOIN Salle AS s ON der.idS_Salle=s.idS_Salle
-	JOIN Horaires AS h ON der.idH_Horaires=h.idH_Horaires; ";
-    $result = mysqli_query($conn, $sql);
-	$sql0="SELECT  dateH_Horaires, heureH_Horaires, nomS_Salle, descriptionT_Type_Session, nomEtu_Etudiant, prenomEtu_Etudiant 
-	FROM (SELECT idEns_Enseignant FROM Enseignant WHERE nomEns_Enseignant='".$nom."' AND prenomEns_Enseignant='".$prenom."') AS prof
-	JOIN Entretien as ent ON prof.idEns_Enseignant=ent.idEns_Enseignant2
-	JOIN Etudiant AS etu ON ent.idEtu_Etudiant=etu.idEtu_Etudiant 
-	JOIN Passe AS p ON etu.idEtu_Etudiant=p.idEtu_Etudiant 
-	JOIN Type_Session AS ts ON p.idT_Type_Session=ts.idT_Type_Session 
-	JOIN se_deroule as der ON ent.idEnt_Entretien=der.idEnt_Entretien
-	JOIN Salle AS s ON der.idS_Salle=s.idS_Salle
-	JOIN Horaires AS h ON der.idH_Horaires=h.idH_Horaires; ";
-	$result0 = mysqli_query($conn, $sql0);
+	$sql = "SELECT dateH_Horaires, heureH_Horaires,nomS_Salle,descriptionT_Type_Session,nomEtu_Etudiant, prenomEtu_Etudiant
+			FROM se_deroule d JOIN Salle s ON d.idS_Salle = s.idS_Salle 
+			JOIN Horaires h ON d.idH_Horaires = h.idH_Horaires 
+			JOIN Entretien ent ON d.idEnt_Entretien = ent.idEnt_Entretien 
+			JOIN Etudiant etu ON ent.idEtu_Etudiant = etu.idEtu_Etudiant
+			JOIN Passe p ON etu.idEtu_Etudiant = p.idEtu_Etudiant
+			JOIN Type_Session t ON p.idT_Type_Session = t.idT_Type_Session
+			WHERE ent.idEns_Enseignant1 =(SELECT idEns_Enseignant FROM Enseignant e WHERE e.nomEns_Enseignant LIKE 'Vernier' AND e.prenomEns_Enseignant = 'Flavien')
+			OR ent.idEns_Enseignant2 =(SELECT idEns_Enseignant FROM Enseignant e WHERE e.nomEns_Enseignant LIKE 'Vernier' AND e.prenomEns_Enseignant = 'Flavien')
+			;";
+	$result = mysqli_query($conn,$sql);
 	echo "<ul>";
 	while ($row=mysqli_fetch_array($result)) {
 		echo "<li>\n";
-		echo $row[3]." le ".$row[0]." à ".$row[1]." en ".$row[2]." pour ".$row[4]." ".$row[5];
-		echo "</li>\n";
-	}
-	while ($row=mysqli_fetch_array($result0)) {
-		echo "<li>\n";
-		echo $row[3]." le ".$row[0]." à ".$row[1]." en ".$row[2]." pour ".$row[4]." ".$row[5];
+		echo "Entretien ".$row[3].": le ".$row[0]." à ".$row[1]." en ".$row[2]." pour ".$row[4]." ".$row[5];
 		echo "</li>\n";
 	}
 	echo "</ul>";
